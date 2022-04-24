@@ -11,26 +11,26 @@ const items = {
     type: 'group',
     children: [
         {
-            id: 'admin-panel',
-            title: 'Admin Panel',
+            id: 'dashboard',
+            title: 'Dashboard',
             type: 'item',
-            url: '/admin/all',
+            url: '/',
             icon: icons.IconBrandChrome,
             breadcrumbs: false
         },
         {
-            id: 'new-vesting',
-            title: 'New Vesting',
+            id: 'account',
+            title: 'Your Account',
             type: 'item',
-            url: '/admin/create',
+            url: '/account',
             icon: icons.IconBrandChrome,
             breadcrumbs: false
         },
         {
-            id: 'vesting-detail',
-            title: 'Vesting Detail',
+            id: 'swap',
+            title: 'Buy / Swap',
             type: 'item',
-            url: '/vesting',
+            url: '/swap',
             icon: icons.IconBrandChrome,
             breadcrumbs: false
         }
