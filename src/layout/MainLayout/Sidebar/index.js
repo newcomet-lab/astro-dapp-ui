@@ -30,7 +30,8 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                 <PerfectScrollbar
                     component="div"
                     style={{
-                        height: !matchUpMd ? 'calc(100vh - 56px)' : 'calc(100vh - 88px)',
+                        height: '100vh',
+                        // height: !matchUpMd ? 'calc(100vh - 56px)' : 'calc(100vh - 88px)',
                         paddingLeft: '16px',
                         paddingRight: '16px'
                     }}
@@ -62,9 +63,9 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                         background: theme.palette.background.default,
                         color: theme.palette.text.primary,
                         borderRight: 'none',
-                        [theme.breakpoints.up('md')]: {
-                            top: '88px'
-                        }
+                        // [theme.breakpoints.up('md')]: {
+                        //     top: '88px'
+                        // }
                     }
                 }}
                 ModalProps={{ keepMounted: true }}
