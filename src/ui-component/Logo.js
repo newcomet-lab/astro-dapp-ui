@@ -1,10 +1,10 @@
-import logo from 'assets/images/logo-dark.svg';
+import logo from 'assets/images/astro/logo.gif';
 
 // ==============================|| LOGO SVG ||============================== //
 
 const Logo = () => {
     return (
-        <img src={logo} alt="Berry" width="180" />
+        <img src={logo} alt="Berry" width="144" />
     );
 };
 

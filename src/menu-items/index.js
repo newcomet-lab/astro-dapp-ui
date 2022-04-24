@@ -1,8 +1,8 @@
 // assets
-import { IconBrandChrome, IconHelp } from '@tabler/icons';
+import { IconChartPie, IconRocket, IconChartLine, IconSettings, IconArrowsShuffle } from '@tabler/icons';
+import GridViewIcon from '@mui/icons-material/GridView';
 
-// constant
-const icons = { IconBrandChrome, IconHelp };
+const icons = { IconRocket, GridViewIcon, IconChartPie, IconChartLine, IconSettings, IconArrowsShuffle };
 
 // ==============================|| SAMPLE PAGE & DOCUMENTATION MENU ITEMS ||============================== //
 
@@ -11,11 +11,19 @@ const items = {
     type: 'group',
     children: [
         {
+            id: 'home',
+            title: 'Home',
+            type: 'item',
+            url: 'https://100daysventures.com/',
+            icon: icons.IconRocket,
+            breadcrumbs: false
+        },
+        {
             id: 'dashboard',
             title: 'Dashboard',
             type: 'item',
             url: '/',
-            icon: icons.IconBrandChrome,
+            icon: icons.GridViewIcon,
             breadcrumbs: false
         },
         {
@@ -23,7 +31,7 @@ const items = {
             title: 'Your Account',
             type: 'item',
             url: '/account',
-            icon: icons.IconBrandChrome,
+            icon: icons.IconChartPie,
             breadcrumbs: false
         },
         {
@@ -31,16 +39,39 @@ const items = {
             title: 'Buy / Swap',
             type: 'item',
             url: '/swap',
-            icon: icons.IconBrandChrome,
+            icon: icons.IconArrowsShuffle,
             breadcrumbs: false
-        }
+        },
+    ]
+};
+
+const items_2 = {
+    id: 'menu-items',
+    type: 'group',
+    children: [
+        {
+            id: 'dexcharts',
+            title: 'Dex Charts',
+            type: 'item',
+            url: 'https://traderjoexyz.com/trade?inputCurrency=AVAX&outputCurrency=0x9a542e3Dfb16B65F954dF8FeEFB37F4e8ff833cC',
+            icon: icons.IconChartLine,
+            breadcrumbs: false
+        },
+        {
+            id: 'docs',
+            title: 'Docs',
+            type: 'item',
+            url: 'https://100-days-1.gitbook.io/whitepaper/',
+            icon: icons.IconSettings,
+            breadcrumbs: false
+        },
     ]
 };
 
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-    items: [items]
+    items: [items, items_2]
 };
 
 export default menuItems;
