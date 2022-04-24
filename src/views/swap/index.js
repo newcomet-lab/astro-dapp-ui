@@ -11,7 +11,7 @@ import MainCard from 'ui-component/cards/MainCard';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
-export default function VestingDetail() {
+export default function Swap() {
  
     return (
         <MainCard title="Vesting Detail">
