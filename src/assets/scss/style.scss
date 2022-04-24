@@ -46,11 +46,11 @@
             background-color: transparent;
         }
     }
-    &.ps--scrolling-y > .ps__rail-y,
-    &.ps--scrolling-x > .ps__rail-x {
-        opacity: 0.4;
-        background-color: transparent;
-    }
+}
+
+.ps__rail-y,
+.ps__rail-x {
+    opacity: 0.4;
 }
 
 // ==============================|| ANIMATION KEYFRAMES ||============================== //

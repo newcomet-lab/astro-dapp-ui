@@ -1,8 +1,10 @@
+import { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
-import { Box, Drawer, Typography, useMediaQuery, Grid, Divider } from '@mui/material';
+import { Box, Drawer, Typography, useMediaQuery, Grid, Divider, ButtonBase } from '@mui/material';
+import TwitterIcon from '@mui/icons-material/Twitter';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -42,10 +44,41 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                     <MenuList />
                 </Box>
             </MobileView>
+
+            <Box sx={{
+                padding: '15px 2px 0',
+                textAlign: 'center'
+            }}>
+                <Grid sx={{display: 'flex', justifyContent: 'center', gap: 3}}>
+                    {/* <ButtonBase sx={{  }}>
+                        <FontAwesomeIcon icon="fa-brands fa-twitter" />
+                    </ButtonBase>
+                    <ButtonBase sx={{  }}>
+                        <FontAwesomeIcon icon="fa-brands fa-medium" />
+                    </ButtonBase>
+                    <ButtonBase sx={{  }}>
+                        <FontAwesomeIcon icon="fa-brands fa-discord" />
+                    </ButtonBase> */}
+                </Grid>
+                <Typography sx={{ fontSize: '16px', marginTop: '32px' }}>Copyright © 2022</Typography>
+                <Typography sx={{ fontSize: '20px' }}>100 DAYS Ventures, LLC</Typography>
+                <Typography sx={{ fontSize: '14px', marginTop: '16px', marginBottom: '16px' }}>All Rights Reserved.</Typography>
+            </Box>
         </>
     );
 
     const container = window !== undefined ? () => window.document.body : undefined;
+
+    const perfectScrollbar = useRef(null);
+
+    useEffect(() => {
+        setTimeout(() => {
+            console.log(perfectScrollbar)
+            if (perfectScrollbar.current !== null)
+            perfectScrollbar.current.updateScroll();
+
+        }, 1000);
+    }, [perfectScrollbar]);
 
     return (
         <Box component="nav" sx={{ flexShrink: { md: 0 }, width: matchUpMd ? drawerWidth : 'auto' }} aria-label="mailbox folders">
@@ -66,6 +99,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                 color="inherit"
             >
                 <PerfectScrollbar
+                    ref={perfectScrollbar}
                     component="div"
                     style={{
                         height: '100vh',

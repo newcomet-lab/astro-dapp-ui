@@ -7,6 +7,7 @@
         "@emotion/cache": "^11.4.0",
         "@emotion/react": "^11.4.0",
         "@emotion/styled": "^11.3.0",
+        "@fortawesome/fontawesome-free": "^6.1.1",
         "@mui/icons-material": "^5.0.3",
         "@mui/lab": "^5.0.0-alpha.50",
         "@mui/material": "^5.0.3",
@@ -21,8 +22,8 @@
         "bn.js": "^5.2.0",
         "buffer": "^4.9.2",
         "buffer-layout": "^1.2.1",
-        "date-fns": "^2.22.1",
         "clsx": "^1.1.1",
+        "date-fns": "^2.22.1",
         "formik": "^2.2.6",
         "framer-motion": "^4.1.13",
         "history": "^5.0.0",
@@ -39,7 +40,7 @@
         "react-scripts": "^4.0.3",
         "redux": "^4.0.5",
         "web3": "^1.5.1",
-        "web3-eth-contract": "^1.5.2",    
+        "web3-eth-contract": "^1.5.2",
         "yup": "^0.32.9"
     },
     "scripts": {
