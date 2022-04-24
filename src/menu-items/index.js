@@ -46,7 +46,7 @@ const items = {
 };
 
 const items_2 = {
-    id: 'menu-items',
+    id: 'menu-items-2',
     type: 'group',
     children: [
         {

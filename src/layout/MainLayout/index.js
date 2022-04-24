@@ -101,7 +101,7 @@ const MainLayout = () => {
                     }}
                 >
                     <Toolbar>
-                        <Header handleLeftDrawerToggle={handleLeftDrawerToggle} />
+                        <Header handleLeftDrawerToggle={handleLeftDrawerToggle} leftDrawerOpened={leftDrawerOpened} />
                     </Toolbar>
                 </AppBar>
 
