@@ -17,7 +17,8 @@ import { SET_MENU } from 'store/actions';
 // assets
 import { IconChevronRight } from '@tabler/icons';
 
-// styles
+import BG_IMAGE from 'assets/images/astro/main-back.jpg';
+
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({
     ...theme.typography.mainContent,
     ...(!open && {
@@ -80,7 +81,11 @@ const MainLayout = () => {
     }, [matchDownMd]);
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{
+            display: 'flex',
+            background: `url(${BG_IMAGE})`,
+            backgroundSize: 'cover',
+        }}>
             <CssBaseline />
 
             <Sidebar drawerOpen={leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} />
@@ -92,7 +97,6 @@ const MainLayout = () => {
                     color="inherit"
                     elevation={0}
                     sx={{
-                        bgcolor: theme.palette.background.default,
                         transition: leftDrawerOpened ? theme.transitions.create('width') : 'none'
                     }}
                 >

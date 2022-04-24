@@ -87,7 +87,6 @@ export default function themeTypography(theme) {
             }
         },
         mainContent: {
-            backgroundColor: theme.background,
             width: '100%',
             minHeight: '100vh',
             flexGrow: 1,
