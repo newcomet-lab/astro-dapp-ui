@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 
@@ -13,6 +13,7 @@ import Sidebar from './Sidebar';
 import navigation from 'menu-items';
 import { drawerWidth } from 'store/constant';
 import { SET_MENU } from 'store/actions';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 // assets
 import { IconChevronRight } from '@tabler/icons';
@@ -30,16 +31,19 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
         }),
         [theme.breakpoints.up('md')]: {
             marginLeft: -(drawerWidth - 20),
-            width: `calc(100% - ${drawerWidth}px)`
+            // width: `calc(100% - ${drawerWidth}px)`
+            width: '100%',
         },
         [theme.breakpoints.down('md')]: {
             marginLeft: '20px',
-            width: `calc(100% - ${drawerWidth}px)`,
+            // width: `calc(100% - ${drawerWidth}px)`,
+            width: '100%',
             padding: '16px'
         },
         [theme.breakpoints.down('sm')]: {
             marginLeft: '10px',
-            width: `calc(100% - ${drawerWidth}px)`,
+            // width: `calc(100% - ${drawerWidth}px)`,
+            width: '100%',
             padding: '16px',
             marginRight: '10px'
         }
@@ -52,7 +56,8 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
         marginLeft: 0,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
-        width: `calc(100% - ${drawerWidth}px)`,
+        // width: `calc(100% - ${drawerWidth}px)`,
+        width: '100%',
         [theme.breakpoints.down('md')]: {
             marginLeft: '20px'
         },
@@ -80,6 +85,17 @@ const MainLayout = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [matchDownMd]);
 
+    const perfectScrollbar = useRef(null);
+
+    useEffect(() => {
+        setTimeout(() => {
+            console.log(perfectScrollbar)
+            if (perfectScrollbar.current !== null)
+            perfectScrollbar.current.updateScroll();
+
+        }, 1000);
+    }, [perfectScrollbar]);
+
     return (
         <Box sx={{
             display: 'flex',
@@ -90,23 +106,32 @@ const MainLayout = () => {
 
             <Sidebar drawerOpen={leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} />
 
-            <Main theme={theme} open={leftDrawerOpened}>
-                <AppBar
-                    enableColorOnDark
-                    position="relative"
-                    color="inherit"
-                    elevation={0}
-                    sx={{
-                        transition: leftDrawerOpened ? theme.transitions.create('width') : 'none'
-                    }}
-                >
-                    <Toolbar>
-                        <Header handleLeftDrawerToggle={handleLeftDrawerToggle} leftDrawerOpened={leftDrawerOpened} />
-                    </Toolbar>
-                </AppBar>
+            <PerfectScrollbar
+                ref={perfectScrollbar}
+                component="div"
+                style={{
+                    height: '100vh',
+                    width: '100%'
+                }}
+            >
+                <Main theme={theme} open={leftDrawerOpened}>
+                    <AppBar
+                        enableColorOnDark
+                        position="relative"
+                        color="inherit"
+                        elevation={0}
+                        sx={{
+                            transition: leftDrawerOpened ? theme.transitions.create('width') : 'none'
+                        }}
+                    >
+                        <Toolbar>
+                            <Header handleLeftDrawerToggle={handleLeftDrawerToggle} leftDrawerOpened={leftDrawerOpened} />
+                        </Toolbar>
+                    </AppBar>
 
-                <Outlet />
-            </Main>
+                    <Outlet />
+                </Main>
+            </PerfectScrollbar>
         </Box>
     );
 };
