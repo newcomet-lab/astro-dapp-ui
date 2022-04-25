@@ -49,7 +49,7 @@ const MainCard = forwardRef(
                             boxShadow: boxShadow ? shadow || '0 2px 14px 0 rgb(32 40 45 / 8%)' : 'inherit'
                         },
                         '& > .MuiCardContent-root': {
-                            padding: '12px 0',
+                            padding: '12px 0 !important',
                         },
                         ...sx
                     }}

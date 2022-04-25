@@ -11,17 +11,20 @@ import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import metamaskIcon from 'assets/images/astro/metamask.png';
+
 export default function SwapForAstro() {
     const [flagExchange, setFlagExchange] = React.useState(true);
+    const [flagSwapButton, setFlagSwapButton] = React.useState(true);
     return (
         <MainCard title="">
-            <Grid container sx={{ rowGap: '15px' }}>
+            <Grid container sx={{ rowGap: '12px' }}>
                 <Grid item container xs={12} md={12} sx={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    rowGap: '15px'
+                    rowGap: '12px'
                 }}>
-                    <Grid xs={12} sm={12} sx={{ padding: '0px 12px' }}>
+                    <Grid container xs={12} sm={12} sx={{ padding: '0px 12px' }}>
                         <SubCard item container>
                             <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Grid>
@@ -167,13 +170,68 @@ export default function SwapForAstro() {
                                 </Grid>
                             </Grid>
                             <Grid sx={{ marginTop: '1rem' }}>
-                                <Button sx={{
+                                <Button variant="contained" sx={{
+                                    cursor: 'pointer',
+                                    flexDirection: 'column',
+                                    padding: '14px 20px',
                                     width: '100%',
-                                    padding: '10px',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    background: 'linear-gradient(90deg,#7a1bff -3.88%,#5947ff)',
                                     fontFamily: 'Poppins',
-                                    fontSize: '18px',
-                                    borderRadius: '8px',
+                                    fontSize: '16px',
+                                    borderRadius: '6px',
                                 }}>Enter an amount</Button>
+                            </Grid>
+                            <Grid sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginTop: '1rem',
+                            }}>
+                                <img src={metamaskIcon} style={{ width: '30px', height: '30px' }} />
+                                <Typography sx={{
+                                    fontSize: '14px',
+                                    fontFamily: 'Poppins',
+                                    marginLeft: '1rem'
+                                }}> Add ASTRO token to MetaMask</Typography>
+                            </Grid>
+                        </SubCard>
+
+                    </Grid>
+                    <Grid container xs={12} sm={12} sx={{ padding: '0px 12px' }}>
+                        <SubCard item container>
+                            <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Typography sx={{
+                                    fontSize: '14px',
+                                    marginBottom: '5px'
+                                }}>Maximum sold</Typography>
+                                <Typography sx={{
+                                    fontSize: '14px',
+                                    fontFamily: 'Poppins'
+                                }}>0 AVAX</Typography>
+                            </Grid>
+                            <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Typography sx={{
+                                    fontSize: '14px',
+                                    marginBottom: '5px'
+                                }}>Price Impact</Typography>
+                                <Typography sx={{
+                                    fontSize: '14px',
+                                    color: '#4ed047',
+                                    fontFamily: 'Poppins'
+                                }}>{'< 0.01%'}</Typography>
+                            </Grid>
+                            <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Typography sx={{
+                                    fontSize: '14px',
+                                    marginBottom: '5px'
+                                }}>Liquidity Provider Fee</Typography>
+                                <Typography sx={{
+                                    fontSize: '14px',
+                                    fontFamily: 'Poppins'
+                                }}>0 AVAX</Typography>
                             </Grid>
                         </SubCard>
                     </Grid>
