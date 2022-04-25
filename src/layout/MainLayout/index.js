@@ -66,7 +66,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
 
 const MainLayout = () => {
     const theme = useTheme();
-    const matchDownMd = useMediaQuery(theme.breakpoints.down('lg'));
+    const matchDownMd = useMediaQuery(theme.breakpoints.down('md'));
 
     // Handle left drawer
     const leftDrawerOpened = useSelector((state) => state.customization.opened);
