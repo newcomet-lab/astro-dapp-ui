@@ -11,8 +11,8 @@ import {
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
-import { faGear } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IconArrowsUpDown, IconSettings } from '@tabler/icons';
+
 
 import metamaskIcon from 'assets/images/astro/metamask.png';
 
@@ -49,7 +49,7 @@ export default function SwapForAstro() {
                                         }}>Buy ASTRO below using <b>AVAX</b> or <b>USDC</b></Typography>}
                                 </Grid>
                                 <ButtonBase variant="contained" sx={{ cursor: 'pointer' }}>
-                                    <FontAwesomeIcon icon={faGear} size='2x' color='rgb(255, 184, 77)'/>
+                                    <IconSettings size='30px' color='rgb(255, 184, 77)' />
                                 </ButtonBase>
 
                             </Grid>
@@ -92,6 +92,7 @@ export default function SwapForAstro() {
                                 </Grid>
                             </Grid>
                             <Grid sx={{
+                                display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 width: '40px',
@@ -101,7 +102,7 @@ export default function SwapForAstro() {
                                 borderRadius: '20px',
                                 background: 'rgb(255, 184, 77)'
                             }}>
-                                <FontAwesomeIcon icon="fa-regular fa-arrow-down-arrow-up" />
+                                <IconArrowsUpDown size='24px' color='rgba(0, 0, 0, 0.54)'/>
                             </Grid>
                             <Grid sx={{
                                 display: 'flex',
