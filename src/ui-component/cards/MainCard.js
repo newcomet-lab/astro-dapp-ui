@@ -3,7 +3,7 @@ import { forwardRef } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Card, CardContent, CardHeader, Divider, Typography } from '@mui/material';
+import { Card, CardContent, Grid, Typography } from '@mui/material';
 
 // constant
 const headerSX = {
@@ -34,7 +34,7 @@ const MainCard = forwardRef(
 
         return (
             <>
-                <Typography variant="h4" gutterBottom component="div">
+                <Typography variant="h4" gutterBottom component="div" sx={{marginLeft: '1.5rem'}}>
                     {title}
                 </Typography>
                 <Card
@@ -66,6 +66,7 @@ const MainCard = forwardRef(
                     )}
                     {!content && children}
                 </Card>
+                <Grid sx={{marginTop: '1.5rem'}}></Grid>
             </>
         );
     }
