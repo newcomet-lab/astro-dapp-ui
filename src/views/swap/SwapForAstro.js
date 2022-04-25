@@ -3,12 +3,15 @@ import * as React from 'react';
 import {
     Grid,
     Typography,
+    ButtonBase,
     Button
 } from '@mui/material';
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
+
+import { faGear } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import metamaskIcon from 'assets/images/astro/metamask.png';
@@ -45,9 +48,10 @@ export default function SwapForAstro() {
                                             fontWeight: '400'
                                         }}>Buy ASTRO below using <b>AVAX</b> or <b>USDC</b></Typography>}
                                 </Grid>
-                                <Grid sx={{ width: '30px', height: '30px' }}>
-                                    <FontAwesomeIcon icon="fa-solid fa-gear" />
-                                </Grid>
+                                <ButtonBase variant="contained" sx={{ cursor: 'pointer' }}>
+                                    <FontAwesomeIcon icon={faGear} size='2x' color='rgb(255, 184, 77)'/>
+                                </ButtonBase>
+
                             </Grid>
                             <Grid sx={{
                                 display: 'flex',
