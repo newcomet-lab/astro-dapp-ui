@@ -1,5 +1,5 @@
-import Metamask from "./WalletIcons/metamaskWallet.png";
-import WalletConnect from "./WalletIcons/wallet-connect.svg";
+import Metamask from "assets/images/wallets/metamaskWallet.png";
+import WalletConnect from "assets/images/wallets/wallet-connect.svg";
 
 export const connectors = [
   {
