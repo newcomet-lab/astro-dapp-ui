@@ -34,9 +34,11 @@ const MainCard = forwardRef(
 
         return (
             <>
-                <Typography variant="h4" gutterBottom component="div" sx={{marginLeft: '1.5rem'}}>
-                    {title}
-                </Typography>
+                <Grid sx={{ height: '26px' }}>
+                    <Typography variant="h4" component="div" sx={{ marginLeft: '1.5rem' }}>
+                        {title}
+                    </Typography>
+                </Grid>
                 <Card
                     ref={ref}
                     {...others}
@@ -47,7 +49,7 @@ const MainCard = forwardRef(
                             boxShadow: boxShadow ? shadow || '0 2px 14px 0 rgb(32 40 45 / 8%)' : 'inherit'
                         },
                         '& > .MuiCardContent-root': {
-                            padding: '12px 0',
+                            padding: '12px 0 !important',
                         },
                         ...sx
                     }}
@@ -69,7 +71,7 @@ const MainCard = forwardRef(
                     )}
                     {!content && children}
                 </Card>
-                <Grid sx={{marginTop: '1.5rem'}}></Grid>
+                <Grid sx={{ marginTop: '1.5rem' }}></Grid>
             </>
         );
     }
