@@ -116,13 +116,12 @@ export default function CommunityPerformance() {
                         justifyContent: 'center'
                     }}>
                         <SubCard item container >
-                            <Grid item sx={{
+                            <Grid item xs={12} sx={{
                                 display: 'flex',
                                 width: '100%',
                                 height: '100%'
                             }}>
-                                <Grid item sx={{
-                                    width: '38%',
+                                <Grid item xs={12} sm={3} sx={{
                                     height: '100%',
                                     padding: '0px 12px',
                                     display: 'flex',
@@ -139,8 +138,7 @@ export default function CommunityPerformance() {
                                         marginBottom: '5px'
                                     }}>00:00</Typography>
                                 </Grid>
-                                <Grid item sx={{
-                                    width: '62%',
+                                <Grid item xs={12} sm={9} sx={{
                                     height: '100%',
                                     padding: '0px 12px',
                                     display: 'flex',
