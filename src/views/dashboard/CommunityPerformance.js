@@ -10,8 +10,6 @@ import {
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
-// ==============================|| SAMPLE PAGE ||============================== //
-
 export default function CommunityPerformance() {
 
     return (

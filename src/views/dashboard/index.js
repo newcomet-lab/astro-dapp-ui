@@ -10,8 +10,6 @@ import {
 import CommunityPerformance from './CommunityPerformance';
 import YourActivity from './YourActivity';
 
-// ==============================|| SAMPLE PAGE ||============================== //
-
 export default function Dashboard() {
 
     return (
