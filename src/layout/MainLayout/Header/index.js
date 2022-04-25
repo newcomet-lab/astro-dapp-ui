@@ -6,12 +6,11 @@ import { Avatar, Grid, Box, ButtonBase, Button, Typography, useMediaQuery } from
 import * as React from 'react';
 import { useNavigate } from "react-router-dom";
 
-import LogoSection from '../LogoSection';
+import Account from 'ui-component/moralis/account';
 
 import { IconMenu2 } from '@tabler/icons';
 
 import METAMAST_IMAGE from 'assets/images/astro/metamask.png';
-import WALLET_IMAGE from 'assets/images/astro/wallet.png';
 
 const Header = ({ handleLeftDrawerToggle, leftDrawerOpened }) => {
     const theme = useTheme();
@@ -62,24 +61,8 @@ const Header = ({ handleLeftDrawerToggle, leftDrawerOpened }) => {
                     <img alt='metamask' width={30} src={METAMAST_IMAGE} />
                     <Typography>Add ASTRO token to MetaMask</Typography>
                 </Grid>
-                <Grid sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '62px',
-                    padding: '10px 30px',
-                    background: '#1e243e',
-                    borderRadius: '8px',
-                    alignItems: 'center'
-                }}>
-                    <Grid sx={{ display: 'flex' }}>
-                        <img alt='wallet' width={24} src={WALLET_IMAGE} />
-                        <Typography sx={{
-                            marginLeft: '8px',
-                            fontSize: '16px'
-                        }}>0xc2...7558</Typography>
-                    </Grid>
-                    <Typography>Disconnect</Typography>
-                </Grid>
+                
+                <Account />
             </Box>
         </>
     );
