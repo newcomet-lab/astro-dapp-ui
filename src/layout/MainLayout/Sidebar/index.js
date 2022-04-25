@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 
 import { useTheme } from '@mui/material/styles';
 import { Box, Drawer, Typography, useMediaQuery, Grid, Divider, ButtonBase } from '@mui/material';
-import TwitterIcon from '@mui/icons-material/Twitter';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTwitter, faMedium, faDiscord } from '@fortawesome/free-brands-svg-icons'
 
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -50,15 +51,15 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                 textAlign: 'center'
             }}>
                 <Grid sx={{display: 'flex', justifyContent: 'center', gap: 3}}>
-                    {/* <ButtonBase sx={{  }}>
-                        <FontAwesomeIcon icon="fa-brands fa-twitter" />
+                    <ButtonBase>
+                        <FontAwesomeIcon icon={faTwitter} size={'2x'} />
                     </ButtonBase>
-                    <ButtonBase sx={{  }}>
-                        <FontAwesomeIcon icon="fa-brands fa-medium" />
+                    <ButtonBase>
+                        <FontAwesomeIcon icon={faMedium} size={'2x'} />
                     </ButtonBase>
-                    <ButtonBase sx={{  }}>
-                        <FontAwesomeIcon icon="fa-brands fa-discord" />
-                    </ButtonBase> */}
+                    <ButtonBase>
+                        <FontAwesomeIcon icon={faDiscord} size={'2x'} />
+                    </ButtonBase>
                 </Grid>
                 <Typography sx={{ fontSize: '16px', marginTop: '32px' }}>Copyright © 2022</Typography>
                 <Typography sx={{ fontSize: '20px' }}>100 DAYS Ventures, LLC</Typography>
