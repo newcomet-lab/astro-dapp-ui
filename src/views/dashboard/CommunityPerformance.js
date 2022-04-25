@@ -30,7 +30,10 @@ export default function CommunityPerformance() {
                                 alignItems: 'center',
                                 justifyContent: 'space-between'
                             }}>
-                                <Typography sx={{ fontSize: '16px' }}>ASTRO Price</Typography>
+                                <Typography sx={{
+                                    fontSize: '16px',
+                                    lineHeight: '35px'
+                                }}>ASTRO Price</Typography>
                                 <Typography item container sx={{
                                     alignSelf: 'center',
                                     backgroundColor: 'rgba(0,0,0,.1)',
@@ -57,7 +60,10 @@ export default function CommunityPerformance() {
                     </Grid>
                     <Grid xs={12} sm={6} sx={{ padding: '0px 12px' }}>
                         <SubCard item container >
-                            <Typography sx={{ fontSize: '16px' }}>Market Cap</Typography>
+                            <Typography sx={{
+                                fontSize: '16px',
+                                lineHeight: '35px'
+                            }}>Market Cap</Typography>
                             <Typography item container sx={{
                                 fontFamily: 'CenturyGothicB',
                                 fontSize: '32px',
@@ -72,7 +78,10 @@ export default function CommunityPerformance() {
                     </Grid>
                     <Grid xs={12} sm={6} sx={{ padding: '0px 12px' }}>
                         <SubCard item container >
-                            <Typography sx={{ fontSize: '16px' }}>APY</Typography>
+                            <Typography sx={{
+                                fontSize: '16px',
+                                lineHeight: '35px'
+                            }}>APY</Typography>
                             <Typography item container sx={{
                                 fontFamily: 'CenturyGothic',
                                 fontSize: '32px',
@@ -94,7 +103,10 @@ export default function CommunityPerformance() {
                     </Grid>
                     <Grid xs={12} sm={6} sx={{ padding: '0px 12px' }}>
                         <SubCard item container >
-                            <Typography sx={{ fontSize: '16px' }}>Total Holders</Typography>
+                            <Typography sx={{
+                                fontSize: '16px',
+                                lineHeight: '35px'
+                            }}>Total Holders</Typography>
                             <Typography item container sx={{
                                 fontFamily: 'CenturyGothicB',
                                 fontSize: '32px',
