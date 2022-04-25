@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTheme } from '@mui/material/styles';
-import { Box, Drawer, Typography, useMediaQuery, Grid, Divider, ButtonBase } from '@mui/material';
+import { Box, Drawer, Typography, useMediaQuery, Grid, Divider, ButtonBase, Link } from '@mui/material';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTwitter, faMedium, faDiscord } from '@fortawesome/free-brands-svg-icons'
@@ -51,13 +51,13 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                 textAlign: 'center'
             }}>
                 <Grid sx={{display: 'flex', justifyContent: 'center', gap: 3}}>
-                    <ButtonBase>
+                    <ButtonBase disableRipple component={Link} href={'https://twitter.com/100Daysventures'} target='_blank'>
                         <FontAwesomeIcon icon={faTwitter} size={'2x'} />
                     </ButtonBase>
-                    <ButtonBase>
+                    <ButtonBase disableRipple component={Link} href={'https://medium.com/@100daysventures.com'} target='_blank'>
                         <FontAwesomeIcon icon={faMedium} size={'2x'} />
                     </ButtonBase>
-                    <ButtonBase>
+                    <ButtonBase disableRipple component={Link} href={'https://discord.gg/100daysventures'} target='_blank'>
                         <FontAwesomeIcon icon={faDiscord} size={'2x'} />
                     </ButtonBase>
                 </Grid>
@@ -74,7 +74,6 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
 
     useEffect(() => {
         setTimeout(() => {
-            console.log(perfectScrollbar)
             if (perfectScrollbar.current !== null)
             perfectScrollbar.current.updateScroll();
 

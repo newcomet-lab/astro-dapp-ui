@@ -89,7 +89,6 @@ const MainLayout = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            console.log(perfectScrollbar)
             if (perfectScrollbar.current !== null)
             perfectScrollbar.current.updateScroll();
 

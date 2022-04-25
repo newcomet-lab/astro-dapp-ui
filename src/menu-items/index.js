@@ -16,6 +16,7 @@ const items = {
             type: 'item',
             url: 'https://100daysventures.com/',
             icon: icons.IconRocket,
+            external: true,
             breadcrumbs: false
         },
         {
@@ -55,6 +56,7 @@ const items_2 = {
             type: 'item',
             url: 'https://traderjoexyz.com/trade?inputCurrency=AVAX&outputCurrency=0x9a542e3Dfb16B65F954dF8FeEFB37F4e8ff833cC',
             icon: icons.IconChartLine,
+            external: true,
             breadcrumbs: false
         },
         {
@@ -63,6 +65,7 @@ const items_2 = {
             type: 'item',
             url: 'https://100-days-1.gitbook.io/whitepaper/',
             icon: icons.IconSettings,
+            external: true,
             breadcrumbs: false
         },
     ]
