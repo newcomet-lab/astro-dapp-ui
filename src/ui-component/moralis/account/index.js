@@ -52,13 +52,12 @@ function Account() {
                         borderRadius: '12px'
                     }}>
                         {connectors.map(({ title, icon, connectorId }, key) => (
-                            <Grid sx={{
+                            <Grid key={key} sx={{
                                 padding: '8px',
                                 width: 1,
                                 border: 'solid 1px #c3c3c324'
                             }}>
                                 <ButtonBase
-                                    key={key}
                                     onClick={async () => {
                                         try {
                                             await authenticate({ provider: connectorId });
