@@ -14,10 +14,10 @@ export default function Account() {
     const matchDownMd = useMediaQuery(theme.breakpoints.down('md'));
     return (
         <Grid container sx={{ padding: '0px 20px', justifyContent: 'space-between' }}>
-            <Grid item xs={12} md={6} sx={{ paddingRight: !matchDownMd ? '5%' : '0%', height: '100%' }}>
+            <Grid item xs={12} md={6} sx={{ paddingRight: !matchDownMd ? '2%' : '0%', height: '100%' }}>
                 <YourAccountActivity />
             </Grid>
-            <Grid item xs={12} md={6} sx={{ paddingRight: !matchDownMd ? '5%' : '0%', height: '100%' }}>
+            <Grid item xs={12} md={6} sx={{ paddingLeft: !matchDownMd ? '2%' : '0%', height: '100%' }}>
                 <RebaseClaimActivity />
             </Grid>
         </Grid>

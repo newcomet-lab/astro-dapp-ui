@@ -4,9 +4,12 @@ import {
     Grid,
     Typography,
     Button,
-    TextField,
-    Slider
 } from '@mui/material';
+
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import { IconPlus, IconMinus } from '@tabler/icons';
 
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
@@ -14,6 +17,12 @@ import SubCard from 'ui-component/cards/SubCard';
 import astroIcon from 'assets/images/astro/astro-icon.png';
 
 export default function RebaseClaimActivity() {
+    const [expanded, setExpanded] = React.useState('accordian');
+
+    const handleChange = (panel) => (event, newExpanded) => {
+        setExpanded(newExpanded ? panel : false);
+    };
+
 
     return (
         <MainCard title="REBASE & CLAIM ACTIVITY">
@@ -25,64 +34,64 @@ export default function RebaseClaimActivity() {
                 }}>
                     <Grid item xs={12} sm={5} sx={{ padding: '0px 12px' }}>
                         <Grid sx={{
-                            padding: '0px 12px',
                             height: '100%',
                             justifyContent: 'center'
                         }}>
                             <SubCard>
-
                                 <Grid sx={{
                                     height: '100%',
-                                    padding: '0px 12px',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
+                                    justifyContent: 'space-around'
                                 }}>
-                                    <Typography sx={{
-                                        fontSize: '12px',
-                                        marginBottom: '5px'
-                                    }}>TIME UNTIL<br></br>NEXT REBASE</Typography>
-                                    <Typography sx={{
-                                        fontSize: '20px',
-                                        marginBottom: '5px'
-                                    }}>00:00</Typography>
-                                </Grid>
-                                <Grid sx={{
-                                    height: '100%',
-                                    padding: '0px 12px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    <Typography sx={{
-                                        fontSize: '16px',
-                                        marginBottom: '5px'
-                                    }}>NEXT REBASE AMOUNT</Typography>
-                                    <Typography sx={{
-                                        fontSize: '20px',
-                                        marginBottom: '5px'
-                                    }}>$0</Typography>
-                                    <Typography sx={{
-                                        fontSize: '12',
-                                        marginBottom: '5px',
-                                        color: '#bcc3cf'
-                                    }}>0 ASTRO</Typography>
-                                </Grid>
-                                <Grid sx={{
-                                    height: '100%',
-                                    padding: '0px 12px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                    <Typography sx={{
-                                        fontSize: '14px',
-                                        marginBottom: '5px',
+                                    <Grid sx={{
+                                        padding: '0px 12px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
                                         textAlign: 'center'
-                                    }}>ASTRO is auto-compounding</Typography>
+                                    }}>
+                                        <Typography sx={{
+                                            fontSize: '12px',
+                                            marginBottom: '5px'
+                                        }}>TIME UNTIL<br></br>NEXT REBASE</Typography>
+                                        <Typography sx={{
+                                            fontSize: '20px',
+                                            marginBottom: '5px'
+                                        }}>00:00</Typography>
+                                    </Grid>
+                                    <Grid sx={{
+                                        padding: '0px 12px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        textAlign: 'center'
+                                    }}>
+                                        <Typography sx={{
+                                            fontSize: '12px',
+                                            marginBottom: '5px'
+                                        }}>NEXT REBASE AMOUNT</Typography>
+                                        <Typography sx={{
+                                            fontSize: '24px',
+                                            marginBottom: '5px'
+                                        }}>$0</Typography>
+                                        <Typography sx={{
+                                            fontSize: '12',
+                                            marginBottom: '5px',
+                                            color: '#bcc3cf'
+                                        }}>0 ASTRO</Typography>
+                                    </Grid>
+                                    <Grid sx={{
+                                        padding: '0px 12px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        textAlign: 'center'
+                                    }}>
+                                        <Typography sx={{
+                                            fontSize: '14px',
+                                            marginBottom: '5px',
+                                            textAlign: 'center',
+                                            cursor: 'pointer'
+                                        }}>ASTRO is auto-compounding</Typography>
+                                    </Grid>
                                 </Grid>
                             </SubCard>
                         </Grid>
@@ -170,224 +179,70 @@ export default function RebaseClaimActivity() {
                             background: '#ddd',
                             margin: '0.5rem 0px',
                         }} />
+                        <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Grid>
+                                <Typography sx={{
+                                    fontSize: '15px',
+                                    fontFamily: 'Poppins',
+                                    fontWeight: '400',
+                                }}>Estimated Amount</Typography>
+                                <Typography sx={{
+                                    fontSize: '15px',
+                                    fontFamily: 'Poppins',
+                                    fontWeight: '400',
+                                }}>You'll Receive in $USDC</Typography>
+                            </Grid>
+                            <Typography sx={{
+                                fontSize: '26px',
+                                fontFamily: 'Poppins',
+                                fontWeight: '400',
+                                color: '#4ed047'
+                            }}>$0</Typography>
+                        </Grid>
+                        <Button variant="contained" sx={{
+                            cursor: 'pointer',
+                            flexDirection: 'column',
+                            padding: '14px 20px',
+                            width: '100%',
+                            marginTop: '10px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            background: 'linear-gradient(90deg,#7a1bff -3.88%,#5947ff)',
+                            fontFamily: 'Poppins',
+                            fontSize: '16px',
+                            borderRadius: '6px',
+                            '&:hover': {
+                                boxShadow: '1px 1px 10px 0 #fa34b2',
+                                transition: 'all .3s ease'
+                            }
+                        }}>Weekly Claim (1%)</Button>
                     </Grid>
                     <Grid item xs={12} sm={12} sx={{
                         display: 'flex',
                         flexWrap: 'wrap',
-                        rowGap: '15px'
+                        rowGap: '15px',
+                        margin: '0px 1rem',
+                        background: 'rgb(21, 27, 52)',
+                        border: '1px solid rgb(89, 71, 255)',
+                        borderRadius: '0.25rem'
                     }}>
-                        <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
-                            <Typography sx={{
-                                fontFamily: 'Poppins',
-                                fontSize: '16px',
-                                fontWeight: '400',
-                                textAlign: 'left',
-                                width: '100%',
-                            }}>Astro Amount</Typography>
-                            <TextField
-                                defaultValue={'0'}
-                                tx={{
-                                    '& .MuiInputBase-input.MuiOutlinedInput-input': {
-                                        alignItems: 'center',
-                                        backgroundColor: '#151b34',
-                                        border: '1px solid #5947ff',
-                                        borderRadius: '8px',
-                                        display: 'flex',
-                                        height: '40px',
-                                        padding: '25px 20px',
-                                        width: '100%',
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root': {
-                                        background: 'transparent',
-                                    },
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent'
-                                    },
-                                    '& .MuiFormLabel-root.MuiInputLabel-root': {
-                                        color: 'transparent',
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent'
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent',
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <Button sx={{
-                                            cursor: 'pointer',
-                                            color: '#fff',
-                                            fontSize: '16px',
-                                            fontFamily: 'Poppins',
-                                            '&:hover': {
-                                                backgroundColor: 'transparent',
-                                                color: 'gray'
-                                            }
-                                        }}>MAX</Button>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
-                            <Typography sx={{
-                                fontFamily: 'Poppins',
-                                fontSize: '16px',
-                                fontWeight: '400',
-                                textAlign: 'left',
-                                width: '100%',
-                            }}>APY (%)</Typography>
-                            <TextField
-                                defaultValue={'0'}
-                                tx={{
-                                    '& .MuiInputBase-input.MuiOutlinedInput-input': {
-                                        alignItems: 'center',
-                                        backgroundColor: '#151b34',
-                                        border: '1px solid #5947ff',
-                                        borderRadius: '8px',
-                                        display: 'flex',
-                                        height: '40px',
-                                        padding: '25px 20px',
-                                        width: '100%',
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root': {
-                                        background: 'transparent',
-                                    },
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent'
-                                    },
-                                    '& .MuiFormLabel-root.MuiInputLabel-root': {
-                                        color: 'transparent',
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent'
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent',
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <Button sx={{
-                                            cursor: 'pointer',
-                                            color: '#fff',
-                                            fontSize: '16px',
-                                            fontFamily: 'Poppins',
-                                            '&:hover': {
-                                                backgroundColor: 'transparent',
-                                                color: 'gray'
-                                            }
-                                        }}>Current</Button>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
-                            <Typography sx={{
-                                fontFamily: 'Poppins',
-                                fontSize: '16px',
-                                fontWeight: '400',
-                                textAlign: 'left',
-                                width: '100%',
-                            }}>ASTRO Price at purchase ($)</Typography>
-                            <TextField
-                                defaultValue={'0'}
-                                tx={{
-                                    '& .MuiInputBase-input.MuiOutlinedInput-input': {
-                                        alignItems: 'center',
-                                        backgroundColor: '#151b34',
-                                        border: '1px solid #5947ff',
-                                        borderRadius: '8px',
-                                        display: 'flex',
-                                        height: '40px',
-                                        padding: '25px 20px',
-                                        width: '100%',
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root': {
-                                        background: 'transparent',
-                                    },
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent'
-                                    },
-                                    '& .MuiFormLabel-root.MuiInputLabel-root': {
-                                        color: 'transparent',
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent'
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent',
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <Button sx={{
-                                            cursor: 'pointer',
-                                            color: '#fff',
-                                            fontSize: '16px',
-                                            fontFamily: 'Poppins',
-                                            '&:hover': {
-                                                backgroundColor: 'transparent',
-                                                color: 'gray'
-                                            }
-                                        }}>Current</Button>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
-                            <Typography sx={{
-                                fontFamily: 'Poppins',
-                                fontSize: '16px',
-                                fontWeight: '400',
-                                textAlign: 'left',
-                                width: '100%',
-                            }}>Future ASTRO Price ($)</Typography>
-                            <TextField
-                                defaultValue={'0'}
-                                tx={{
-                                    '& .MuiInputBase-input.MuiOutlinedInput-input': {
-                                        alignItems: 'center',
-                                        backgroundColor: '#151b34',
-                                        border: '1px solid #5947ff',
-                                        borderRadius: '8px',
-                                        display: 'flex',
-                                        height: '40px',
-                                        padding: '25px 20px',
-                                        width: '100%',
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root': {
-                                        background: 'transparent',
-                                    },
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent'
-                                    },
-                                    '& .MuiFormLabel-root.MuiInputLabel-root': {
-                                        color: 'transparent',
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent'
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent',
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <Button sx={{
-                                            cursor: 'pointer',
-                                            color: '#fff',
-                                            fontSize: '16px',
-                                            fontFamily: 'Poppins',
-                                            '&:hover': {
-                                                backgroundColor: 'transparent',
-                                                color: 'gray'
-                                            }
-                                        }}>Current</Button>
-                                    ),
-                                }}
-                            />
-                        </Grid>
+                        <Accordion expanded={expanded === 'accordian'} onChange={handleChange('accordian')} defaultExpanded>
+                            <AccordionSummary
+                                expandIcon={expanded === 'accordian' ? <IconMinus size='20px' color='#FFF' /> : <IconPlus size='20px' color='#FFF' />}
+                                aria-controls="accordiana-content"
+                                id="accordiana-header"
+                            >
+                                <Typography sx={{
+                                    fontFamily: 'Poppins',
+                                    fontSize: '16px',
+                                    fontWeight: '500',
+                                }}>Tax / Reflections Guide</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                
+                            </AccordionDetails>
+                        </Accordion>
                     </Grid>
                     <Grid item xs={12} sm={12} sx={{ padding: '0px 16px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -395,55 +250,67 @@ export default function RebaseClaimActivity() {
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
                                 fontWeight: '400',
-                            }}>Your initial investment</Typography>
+                            }}>Current ASTRO Price</Typography>
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
-                            }}>$0</Typography>
+                            }}>$ 0 USD</Typography>
                         </Grid>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
                                 fontWeight: '400',
-                            }}>Current wealth</Typography>
+                            }}>Next Reward Amount</Typography>
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
-                            }}>$0</Typography>
+                                color: '#ffb84d'
+                            }}>0 ASTRO</Typography>
                         </Grid>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
                                 fontWeight: '400',
-                            }}>ASTRO rewards estimation</Typography>
+                            }}>Next Reward Amount USDC</Typography>
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
-                            }}>$0</Typography>
+                            }}>$ 0 USD</Typography>
                         </Grid>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
                                 fontWeight: '400',
-                            }}>Potential return</Typography>
+                            }}>Next Reward Yield</Typography>
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
-                            }}>$0</Typography>
+                            }}>0.03944 %</Typography>
                         </Grid>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
                                 fontWeight: '400',
-                            }}>Potential number of ASTRO Journeys</Typography>
+                            }}>ROI (30-Day Rate)</Typography>
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
-                            }}>$0</Typography>
+                            }}>76.44 %</Typography>
+                        </Grid>
+                        <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography sx={{
+                                fontSize: '16px',
+                                fontFamily: 'Poppins',
+                                fontWeight: '400',
+                            }}>ROI (30-Day Rate) USD</Typography>
+                            <Typography sx={{
+                                fontSize: '16px',
+                                fontFamily: 'Poppins',
+                            }}>$ 0 USD</Typography>
                         </Grid>
                     </Grid>
                 </Grid>

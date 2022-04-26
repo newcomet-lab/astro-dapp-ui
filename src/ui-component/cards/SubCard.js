@@ -22,8 +22,6 @@ const SubCard = forwardRef(({ children, content, contentClass, secondary, sx = {
                 background: 'rgba(90,70,255,.15)',
                 borderRadius: '10px',
                 boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'column',
                 justifyContent: 'space-between',
                 width: '100%',
                 height: '100%',
@@ -33,7 +31,7 @@ const SubCard = forwardRef(({ children, content, contentClass, secondary, sx = {
         >
             {/* card content */}
             {content && (
-                <CardContent sx={{ p: 2.5, ...contentSX }} className={contentClass || ''}>
+                <CardContent sx={{ p: 2.5, ...contentSX, height: '100%', }} className={contentClass || ''}>
                     {children}
                 </CardContent>
             )}

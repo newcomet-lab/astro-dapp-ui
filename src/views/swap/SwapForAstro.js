@@ -50,7 +50,6 @@ export default function SwapForAstro() {
                                 <ButtonBase variant="contained" sx={{ cursor: 'pointer' }}>
                                     <IconSettings size='30px' color='rgb(255, 184, 77)' />
                                 </ButtonBase>
-
                             </Grid>
                             <Grid sx={{
                                 display: 'flex',
