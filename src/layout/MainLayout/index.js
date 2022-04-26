@@ -29,23 +29,17 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen
         }),
-        [theme.breakpoints.up('md')]: {
-            marginLeft: -(drawerWidth - 20),
-            // width: `calc(100% - ${drawerWidth}px)`
+        [theme.breakpoints.up('lg')]: {
+            marginLeft: -(drawerWidth),
             width: '100%',
         },
-        [theme.breakpoints.down('md')]: {
-            marginLeft: '20px',
-            // width: `calc(100% - ${drawerWidth}px)`,
+        [theme.breakpoints.down('lg')]: {
             width: '100%',
             padding: '16px'
         },
         [theme.breakpoints.down('sm')]: {
-            marginLeft: '10px',
-            // width: `calc(100% - ${drawerWidth}px)`,
             width: '100%',
             padding: '16px',
-            marginRight: '10px'
         }
     }),
     ...(open && {
@@ -56,14 +50,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
         marginLeft: 0,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
-        // width: `calc(100% - ${drawerWidth}px)`,
         width: '100%',
-        [theme.breakpoints.down('md')]: {
-            marginLeft: '20px'
-        },
-        [theme.breakpoints.down('sm')]: {
-            marginLeft: '10px'
-        }
     })
 }));
 

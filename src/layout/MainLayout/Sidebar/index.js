@@ -20,7 +20,7 @@ import { drawerWidth } from 'store/constant';
 
 const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
     const theme = useTheme();
-    const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
+    const matchUpLG = useMediaQuery(theme.breakpoints.up('lg'));
 
     const drawer = (
         <>
@@ -81,10 +81,10 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
     }, [perfectScrollbar]);
 
     return (
-        <Box component="nav" sx={{ flexShrink: { md: 0 }, width: matchUpMd ? drawerWidth : 'auto' }} aria-label="mailbox folders">
+        <Box component="nav" sx={{ flexShrink: { lg: 0 }, width: matchUpLG ? drawerWidth : 'auto' }} aria-label="mailbox folders">
             <Drawer
                 container={container}
-                variant={matchUpMd ? 'persistent' : 'temporary'}
+                variant={matchUpLG ? 'persistent' : 'temporary'}
                 anchor="left"
                 open={drawerOpen}
                 onClose={drawerToggle}
@@ -93,6 +93,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                         width: drawerWidth,
                         color: theme.palette.text.primary,
                         borderRight: 'none',
+                        background: matchUpLG ? 'transparent' : 'linear-gradient(180deg,#17164d 50%,#101348)'
                     }
                 }}
                 ModalProps={{ keepMounted: true }}
