@@ -4,11 +4,13 @@ import {
     Grid,
     Typography,
     Button,
+    useMediaQuery
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
+import MuiAccordion from '@mui/material/Accordion';
+import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import { IconPlus, IconMinus } from '@tabler/icons';
 
 import MainCard from 'ui-component/cards/MainCard';
@@ -17,6 +19,10 @@ import SubCard from 'ui-component/cards/SubCard';
 import astroIcon from 'assets/images/astro/astro-icon.png';
 
 export default function RebaseClaimActivity() {
+
+    const theme = useTheme();
+    const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
+
     const [expanded, setExpanded] = React.useState('accordian');
 
     const handleChange = (panel) => (event, newExpanded) => {
@@ -219,30 +225,98 @@ export default function RebaseClaimActivity() {
                         }}>Weekly Claim (1%)</Button>
                     </Grid>
                     <Grid item xs={12} sm={12} sx={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        rowGap: '15px',
                         margin: '0px 1rem',
                         background: 'rgb(21, 27, 52)',
                         border: '1px solid rgb(89, 71, 255)',
-                        borderRadius: '0.25rem'
+                        borderRadius: '0.25rem',
+                        overflow: 'hidden'
                     }}>
-                        <Accordion expanded={expanded === 'accordian'} onChange={handleChange('accordian')} defaultExpanded>
-                            <AccordionSummary
-                                expandIcon={expanded === 'accordian' ? <IconMinus size='20px' color='#FFF' /> : <IconPlus size='20px' color='#FFF' />}
-                                aria-controls="accordiana-content"
-                                id="accordiana-header"
-                            >
+                        <MuiAccordion
+                            disableGutters elevation={0} square
+                            expanded={expanded === 'accordian'} onChange={handleChange('accordian')}>
+                            <MuiAccordionSummary
+                                expandIcon={expanded === 'accordian' ? <IconMinus size='24px' color='#FFF' /> : <IconPlus size='24px' color='#FFF' />}
+                                aria-controls="accordiand-content" id="accordiand-header">
                                 <Typography sx={{
-                                    fontFamily: 'Poppins',
+                                    // fontFamily: 'Poppins',
                                     fontSize: '16px',
                                     fontWeight: '500',
                                 }}>Tax / Reflections Guide</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                
-                            </AccordionDetails>
-                        </Accordion>
+                            </MuiAccordionSummary>
+                            <MuiAccordionDetails sx={{ borderTop: '1px solid rgb(89, 71, 255)', }}>
+                                <Grid container sx={{ width: '100%' }}>
+                                    <Grid item container xs={12} sm={12}>
+                                        <Grid item xs={12} sm={6} sx={{ paddingRight: !matchDownSM ? '16px' : '0px' }}>
+                                            <Typography sx={{
+                                                fontFamily: 'Poppins',
+                                                fontSize: '16px',
+                                                fontWeight: '700',
+                                                margin: '1px'
+                                            }}>Regular Tax:</Typography>
+                                            <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <Typography sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: '12px',
+                                                    color: 'rgb(188, 195, 207)'
+                                                }}>Tax / Reflections Guide</Typography>
+                                                <Typography sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: '12px',
+                                                    color: '#fff'
+                                                }}>15%</Typography>
+                                            </Grid>
+                                            <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <Typography sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: '12px',
+                                                    color: 'rgb(188, 195, 207)'
+                                                }}>Cell Tax</Typography>
+                                                <Typography sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: '12px',
+                                                    color: '#fff'
+                                                }}>30%</Typography>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} sx={{
+                                            borderLeft: !matchDownSM ? '2px solid rgb(70, 77, 98)' : '0px solid transparent',
+                                            paddingLeft: !matchDownSM ? '16px' : '0px'
+                                        }}>
+                                            <Typography sx={{
+                                                fontFamily: 'Poppins',
+                                                fontSize: '16px',
+                                                fontWeight: '700',
+                                                margin: '1px'
+                                            }}>Whale Tax (volumn sell tax):</Typography>
+                                            <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <Typography sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: '12px',
+                                                    color: 'rgb(188, 195, 207)'
+                                                }}>{"USD > $25,001"}</Typography>
+                                                <Typography sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: '12px',
+                                                    color: '#fff'
+                                                }}>80%</Typography>
+                                            </Grid>
+                                            <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <Typography sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: '12px',
+                                                    color: 'rgb(188, 195, 207)'
+                                                }}>USD $10,001 - $25,000</Typography>
+                                                <Typography sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: '12px',
+                                                    color: '#fff'
+                                                }}>50%</Typography>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </MuiAccordionDetails>
+                        </MuiAccordion>
                     </Grid>
                     <Grid item xs={12} sm={12} sx={{ padding: '0px 16px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
