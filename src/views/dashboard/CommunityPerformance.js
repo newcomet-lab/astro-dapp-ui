@@ -15,6 +15,7 @@ import SubCard from 'ui-component/cards/SubCard';
 
 import { formatFloatFixed } from 'utils/helpers';
 import useAstroMoralis from 'hooks/useAstroMoralis';
+import useDataService from 'hooks/useDataService';
 
 export default function CommunityPerformance() {
 
@@ -22,6 +23,7 @@ export default function CommunityPerformance() {
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [{ astroAPY, astroROI }] = useAstroMoralis();
+    const [{ loading, astroPrice, holdersCount }] = useDataService();
 
     return (
         <MainCard title="COMMUNITY PERFORMANCE">
@@ -54,17 +56,19 @@ export default function CommunityPerformance() {
                                     textAlign: 'center'
                                 }}>-100.00%</Typography>
                             </Grid>
-                            <Typography sx={{
-                                color: '#4ed047',
-                                fontFamily: 'CenturyGothic',
-                                fontSize: '32px',
-                                lineHeight: '35px',
-                                overflow: 'hidden',
-                                textAlign: 'left',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                                margin: '1rem 0px'
-                            }}>$0</Typography>
+                            {loading
+                                ? <Skeleton variant="rectangular" width={'100%'} height={35} />
+                                : <Typography sx={{
+                                    color: '#4ed047',
+                                    fontFamily: 'CenturyGothic',
+                                    fontSize: '32px',
+                                    lineHeight: '35px',
+                                    overflow: 'hidden',
+                                    textAlign: 'left',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    margin: '1rem 0px'
+                                }}>${astroPrice}</Typography>}
                         </SubCard>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
@@ -101,9 +105,9 @@ export default function CommunityPerformance() {
                                 whiteSpace: 'nowrap',
                                 marginBottom: '5px'
                             }}>{
-                                astroAPY ? formatFloatFixed(astroAPY, 2) + '%'
-                                    : <Skeleton variant="rectangular" width={'100%'} height={35} />
-                            }</Typography>
+                                    astroAPY ? formatFloatFixed(astroAPY, 2) + '%'
+                                        : <Skeleton variant="rectangular" width={'100%'} height={35} />
+                                }</Typography>
 
                             <Typography sx={{
                                 color: 'hsla(0,0%,100%,.8)',
@@ -112,9 +116,9 @@ export default function CommunityPerformance() {
                                 margin: 0,
                                 textAlign: 'left',
                             }}>Daily % Rate (DPR): {
-                                astroROI ? formatFloatFixed(astroROI, 2) + '%'
-                                    : <Skeleton variant="rectangular" width={'100%'} height={24} />
-                            }</Typography>
+                                    astroROI ? formatFloatFixed(astroROI, 2) + '%'
+                                        : <Skeleton variant="rectangular" width={'100%'} height={24} />
+                                }</Typography>
 
                         </SubCard>
                     </Grid>
@@ -124,16 +128,18 @@ export default function CommunityPerformance() {
                                 fontSize: '16px',
                                 lineHeight: '35px'
                             }}>Total Holders</Typography>
-                            <Typography sx={{
-                                fontFamily: 'CenturyGothicB',
-                                fontSize: '32px',
-                                lineHeight: '35px',
-                                overflow: 'hidden',
-                                textAlign: 'left',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                                margin: '1rem 0px'
-                            }}>1,579</Typography>
+                            {loading
+                                ? <Skeleton variant="rectangular" width={'100%'} height={35} />
+                                : <Typography sx={{
+                                    fontFamily: 'CenturyGothicB',
+                                    fontSize: '32px',
+                                    lineHeight: '35px',
+                                    overflow: 'hidden',
+                                    textAlign: 'left',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    margin: '1rem 0px'
+                                }}>{holdersCount}</Typography>}
                         </SubCard>
                     </Grid>
                 </Grid>
@@ -158,7 +164,7 @@ export default function CommunityPerformance() {
                                             variant="determinate"
                                             sx={{ color: '#feb74c' }}
                                             value={100}
-                                            size={!matchDownSM ? '110px': '300px'}
+                                            size={!matchDownSM ? '110px' : '300px'}
                                             thickness={4.5} />
                                     </Grid>
                                     <Grid sx={{
