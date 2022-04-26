@@ -71,7 +71,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
 
 const MainLayout = () => {
     const theme = useTheme();
-    const matchDownMd = useMediaQuery(theme.breakpoints.down('md'));
+    const matchDownLG = useMediaQuery(theme.breakpoints.down('lg'));
 
     // Handle left drawer
     const leftDrawerOpened = useSelector((state) => state.customization.opened);
@@ -81,9 +81,9 @@ const MainLayout = () => {
     };
 
     useEffect(() => {
-        dispatch({ type: SET_MENU, opened: !matchDownMd });
+        dispatch({ type: SET_MENU, opened: !matchDownLG });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [matchDownMd]);
+    }, [matchDownLG]);
 
     const perfectScrollbar = useRef(null);
 

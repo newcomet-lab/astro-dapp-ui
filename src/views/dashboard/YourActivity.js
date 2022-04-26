@@ -3,13 +3,18 @@ import * as React from 'react';
 import {
     Grid,
     Typography,
-    Button
+    Button,
+    Skeleton
 } from '@mui/material';
 
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
+import { formatFloatFixed } from 'utils/helpers';
+import useAstroMoralis from 'hooks/useAstroMoralis';
+
 export default function YourActivity() {
+    const [{ astroAPY, astroROI }] = useAstroMoralis();
 
     return (
         <MainCard title="YOUR ACTIVITY">
@@ -58,14 +63,20 @@ export default function YourActivity() {
                                 textAlign: 'left',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                            }}>100,003.37%</Typography>
+                            }}>{
+                                astroAPY ? formatFloatFixed(astroAPY, 2) + '%'
+                                    : <Skeleton variant="rectangular" width={'100%'} height={35} />
+                            }</Typography>
                             <Typography sx={{
                                 color: 'hsla(0,0%,100%,.8)',
                                 fontFamily: 'Poppins',
                                 fontSize: '16px',
                                 margin: 0,
                                 textAlign: 'left',
-                            }}>Daily % Rate (DPR): ~</Typography>
+                            }}>Daily % Rate (DPR): {
+                                astroROI ? formatFloatFixed(astroROI, 2) + '%'
+                                    : <Skeleton variant="rectangular" width={'100%'} height={24} />
+                            }</Typography>
                         </SubCard>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>

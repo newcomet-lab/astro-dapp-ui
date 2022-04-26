@@ -10,6 +10,8 @@ import NavigationScroll from 'layout/NavigationScroll';
 
 import { MoralisProvider } from "react-moralis";
 
+import { AstroMoralisProvider } from 'hooks/useAstroMoralis';
+
 const APP_ID = 'A4qAxwZeN4amP0v4JFiqnAGFxsJRhOu4rCoDCDdQ';
 const SERVER_URL = 'https://v1itj0kwswny.usemoralis.com:2053/server';
 // const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
@@ -27,15 +29,17 @@ const App = () => {
         );
     if (isServerInfo)
         return (
-            <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
-                <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={themes(customization)}>
-                        <CssBaseline />
-                        <NavigationScroll>
-                            <Routes />
-                        </NavigationScroll>
-                    </ThemeProvider>
-                </StyledEngineProvider>
+            <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL} initializeOnMount={true}>
+                <AstroMoralisProvider>
+                    <StyledEngineProvider injectFirst>
+                        <ThemeProvider theme={themes(customization)}>
+                            <CssBaseline />
+                            <NavigationScroll>
+                                <Routes />
+                            </NavigationScroll>
+                        </ThemeProvider>
+                    </StyledEngineProvider>
+                </AstroMoralisProvider>
             </MoralisProvider>
         );
     else {
