@@ -13,7 +13,7 @@ import { useTheme } from '@mui/material/styles';
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
-import { formatFloatFixed } from 'utils/helpers';
+import { formatFloatFixed, numberWithCommas } from 'utils/helpers';
 import useAstroMoralis from 'hooks/useAstroMoralis';
 import useDataService from 'hooks/useDataService';
 
@@ -68,7 +68,7 @@ export default function CommunityPerformance() {
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
                                     margin: '1rem 0px'
-                                }}>${astroPrice}</Typography>}
+                                }}>${numberWithCommas(astroPrice)}</Typography>}
                         </SubCard>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
@@ -139,7 +139,7 @@ export default function CommunityPerformance() {
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
                                     margin: '1rem 0px'
-                                }}>{holdersCount}</Typography>}
+                                }}>{numberWithCommas(holdersCount)}</Typography>}
                         </SubCard>
                     </Grid>
                 </Grid>
