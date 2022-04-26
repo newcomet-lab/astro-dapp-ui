@@ -4,8 +4,11 @@ import {
     Grid,
     Typography,
     Button,
-    Skeleton
+    Skeleton,
+    CircularProgress,
+    useMediaQuery
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
@@ -42,6 +45,9 @@ const calcAPY = (b1, b2, b3, dec) => {
 }
 
 export default function CommunityPerformance() {
+    const theme = useTheme();
+    const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
+
     const rewardApiObj = useApiContract(rewardApiOpt);
     const rewardDominatorApi = useApiContract(rewardDominatorApiOpt);
     const rebaseFrequencyApi = useApiContract(rebaseFrequencyApiOpt);
@@ -124,18 +130,18 @@ export default function CommunityPerformance() {
                                 whiteSpace: 'nowrap',
                                 marginBottom: '5px'
                             }}>{
-                                rewardApiObj && rewardApiObj.data && rewardDominatorApi && rewardDominatorApi.data && rebaseFrequencyApi && rebaseFrequencyApi.data ?
-                                    formatFloatFixed(
-                                        Math.round(
-                                            calcAPY(
-                                                Number(rewardApiObj.data),
-                                                Number(rewardDominatorApi.data),
-                                                365 * 24 * 3600 / Number(rebaseFrequencyApi.data), 2
-                                            ).toNumber() / 10
-                                        ) / 100
-                                        , 2
-                                    ) + '%' : <Skeleton variant="rectangular" width={'100%'} height={35} />
-                            }</Typography>
+                                    rewardApiObj && rewardApiObj.data && rewardDominatorApi && rewardDominatorApi.data && rebaseFrequencyApi && rebaseFrequencyApi.data ?
+                                        formatFloatFixed(
+                                            Math.round(
+                                                calcAPY(
+                                                    Number(rewardApiObj.data),
+                                                    Number(rewardDominatorApi.data),
+                                                    365 * 24 * 3600 / Number(rebaseFrequencyApi.data), 2
+                                                ).toNumber() / 10
+                                            ) / 100
+                                            , 2
+                                        ) + '%' : <Skeleton variant="rectangular" width={'100%'} height={35} />
+                                }</Typography>
                             <Typography sx={{
                                 color: 'hsla(0,0%,100%,.8)',
                                 fontFamily: 'Poppins',
@@ -143,18 +149,18 @@ export default function CommunityPerformance() {
                                 margin: 0,
                                 textAlign: 'left',
                             }}>Daily % Rate (DPR): {
-                                rewardApiObj && rewardApiObj.data && rewardDominatorApi && rewardDominatorApi.data && rebaseFrequencyApi && rebaseFrequencyApi.data ?
-                                    formatFloatFixed(
-                                        Math.round(
-                                            calcAPY(
-                                                Number(rewardApiObj.data),
-                                                Number(rewardDominatorApi.data),
-                                                24 * 3600 / Number(rebaseFrequencyApi.data), 2
-                                            ).toNumber() / 10
-                                        ) / 100
-                                        , 2
-                                    ) + '%' : <Skeleton variant="rectangular" width={'100%'} height={24} />
-                            }</Typography>
+                                    rewardApiObj && rewardApiObj.data && rewardDominatorApi && rewardDominatorApi.data && rebaseFrequencyApi && rebaseFrequencyApi.data ?
+                                        formatFloatFixed(
+                                            Math.round(
+                                                calcAPY(
+                                                    Number(rewardApiObj.data),
+                                                    Number(rewardDominatorApi.data),
+                                                    24 * 3600 / Number(rebaseFrequencyApi.data), 2
+                                                ).toNumber() / 10
+                                            ) / 100
+                                            , 2
+                                        ) + '%' : <Skeleton variant="rectangular" width={'100%'} height={24} />
+                                }</Typography>
                         </SubCard>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
@@ -184,29 +190,41 @@ export default function CommunityPerformance() {
                         justifyContent: 'center'
                     }}>
                         <SubCard>
-                            <Grid item xs={12} sx={{
-                                display: 'flex',
-                                width: '100%',
-                                height: '100%'
-                            }}>
+                            <Grid item container xs={12} sm={12} sx={{ height: !matchDownSM ? '100%' : 'auto' }}>
                                 <Grid item xs={12} sm={3} sx={{
                                     height: '100%',
-                                    padding: '0px 12px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     justifyContent: 'center'
                                 }}>
-                                    <Typography sx={{
-                                        fontSize: '12px',
-                                        marginBottom: '5px'
-                                    }}>TIME UNTIL<br></br>NEXT REBASE</Typography>
-                                    <Typography sx={{
-                                        fontSize: '20px',
-                                        marginBottom: '5px'
-                                    }}>00:00</Typography>
+                                    <Grid>
+                                        <CircularProgress
+                                            variant="determinate"
+                                            sx={{ color: '#feb74c' }}
+                                            value={100}
+                                            size={!matchDownSM ? '110px': '300px'}
+                                            thickness={4.5} />
+                                    </Grid>
+                                    <Grid sx={{
+                                        position: 'absolute',
+                                        zIndex: '1',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <Typography sx={{
+                                            fontSize: '12px',
+                                            marginBottom: '5px',
+                                            textAlign: 'center',
+                                        }}>TIME UNTIL<br></br>NEXT REBASE</Typography>
+                                        <Typography sx={{
+                                            fontSize: '20px',
+                                        }}>00:00</Typography>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={9} sx={{
+                                <Grid item container xs={12} sm={9} sx={{
                                     height: '100%',
                                     padding: '0px 12px',
                                     display: 'flex',
@@ -215,11 +233,13 @@ export default function CommunityPerformance() {
                                     justifyContent: 'center'
                                 }}>
                                     <Typography sx={{
+                                        textAlign: 'center',
                                         fontSize: '16px',
                                         marginBottom: '5px'
                                     }}>NEXT REBASE AMOUNT</Typography>
                                     <Typography sx={{
                                         fontSize: '20px',
+                                        fontWeight: 'bold',
                                         marginBottom: '5px'
                                     }}>$0</Typography>
                                     <Typography sx={{
@@ -227,27 +247,23 @@ export default function CommunityPerformance() {
                                         marginBottom: '5px',
                                         color: '#bcc3cf'
                                     }}>0 ASTRO</Typography>
-                                    <Grid item sm={12}>
-                                        <Button variant="contained" sx={{
-                                            cursor: 'pointer',
-                                            flexDirection: 'column',
-                                            padding: '14px 20px',
-                                            width: 'calc(100% - 50px)',
-                                            marginLeft: '25px',
-                                            marginRight: '25px',
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            background: 'linear-gradient(90deg,#7a1bff -3.88%,#5947ff)',
-                                            fontFamily: 'Poppins',
-                                            fontSize: '16px',
-                                            borderRadius: '6px',
-                                            '&:hover': {
-                                                boxShadow: '1px 1px 10px 0 #fa34b2',
-                                                transition: 'all .3s ease'
-                                            }
-                                        }}>Weekly Claim (1%)</Button>
-                                    </Grid>
+                                    <Button variant="contained" sx={{
+                                        cursor: 'pointer',
+                                        flexDirection: 'column',
+                                        padding: '14px 20px',
+                                        width: 'calc(100% - 50px)',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        background: 'linear-gradient(90deg,#7a1bff -3.88%,#5947ff)',
+                                        fontFamily: 'Poppins',
+                                        fontSize: '16px',
+                                        borderRadius: '6px',
+                                        '&:hover': {
+                                            boxShadow: '1px 1px 10px 0 #fa34b2',
+                                            transition: 'all .3s ease'
+                                        }
+                                    }}>Weekly Claim (1%)</Button>
                                     <Typography sx={{
                                         fontSize: '14px',
                                         marginBottom: '5px',
