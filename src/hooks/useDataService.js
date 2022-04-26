@@ -7,8 +7,8 @@ const TOTAL_HOLDERS_URL = 'https://api.covalenthq.com/v1/43114/tokens/0x9a542e3D
 const DataServiceContext = createContext(null);
 
 export default function useDataService() {
-    const [{ loading, astroPrice, totalHolders }] = useContext(DataServiceContext);
-    return [{ loading, astroPrice, totalHolders }]
+    const [{ loading, astroPrice, holdersCount }] = useContext(DataServiceContext);
+    return [{ loading, astroPrice, holdersCount }]
 }
 
 export const DataServiceProvider = ({ children }) => {
@@ -17,6 +17,7 @@ export const DataServiceProvider = ({ children }) => {
     const [holdersCount, setHoldersCount] = useState(0);
 
     const getAstroPrice = async () => {
+        setLoading(true);
         try {
             const { data: response } = await axios.get(ASTRO_PRICE_URL);
             setAstroPrice(response);
@@ -27,9 +28,10 @@ export const DataServiceProvider = ({ children }) => {
     };
 
     const getTotalHolders = async () => {
+        setLoading(true);
         try {
             const { data: response } = await axios.get(TOTAL_HOLDERS_URL);
-            setHoldersCount(response.pagination.total_count);
+            setHoldersCount(response.data.pagination.total_count);
         } catch (error) {
             console.error(error)
         }
