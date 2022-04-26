@@ -9,12 +9,12 @@ import {
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
-export default function YourActivity() {
+export default function YourAccountActivity() {
 
     return (
-        <MainCard title="YOUR ACTIVITY">
+        <MainCard title="YOUR ACCOUNT ACTIVITY">
             <Grid container sx={{ rowGap: '15px' }}>
-                <Grid item container xs={12} md={6} sx={{
+                <Grid item container xs={12} md={12} sx={{
                     display: 'flex',
                     flexWrap: 'wrap',
                     rowGap: '15px'
@@ -135,6 +135,21 @@ export default function YourActivity() {
                             }}>0 ASTRO</Typography>
                         </SubCard>
                     </Grid>
+                </Grid>
+
+                <Grid item container xs={12} md={12}>
+                    <Grid sx={{
+                        padding: '0px 12px',
+                        height: '380px',
+                        width: '100%',
+                        justifyContent: 'center'
+                    }}>
+                        <SubCard>
+
+                        </SubCard>
+                    </Grid>
+                </Grid>
+                <Grid item container xs={12} md={12} >
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
                         <Button variant="contained" sx={{
                             cursor: 'pointer',
@@ -154,7 +169,7 @@ export default function YourActivity() {
                                 boxShadow: '1px 1px 10px 0 #fa34b2',
                                 transition: 'all .3s ease'
                             }
-                        }}>DEX Charts</Button>
+                        }}>DEX<br></br>Charts</Button>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
                         <Button variant="contained" sx={{
@@ -173,19 +188,7 @@ export default function YourActivity() {
                                 boxShadow: '1px 1px 10px 0 #fa34b2',
                                 transition: 'all .3s ease'
                             }
-                        }}>Buy ASTRO</Button>
-                    </Grid>
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                    <Grid sx={{
-                        padding: '0px 12px',
-                        height: '100%',
-                        justifyContent: 'center'
-                    }}>
-                        <SubCard>
-
-                        </SubCard>
+                        }}>Buy<br></br>ASTRO</Button>
                     </Grid>
                 </Grid>
             </Grid >

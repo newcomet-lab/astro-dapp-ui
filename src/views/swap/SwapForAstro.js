@@ -7,7 +7,6 @@ import {
     Button
 } from '@mui/material';
 
-// project imports
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
@@ -27,8 +26,8 @@ export default function SwapForAstro() {
                     flexWrap: 'wrap',
                     rowGap: '12px'
                 }}>
-                    <Grid container xs={12} sm={12} sx={{ padding: '0px 12px' }}>
-                        <SubCard item container>
+                    <Grid container item xs={12} sm={12} sx={{ padding: '0px 12px' }}>
+                        <SubCard>
                             <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Grid>
                                     <Typography sx={{
@@ -205,8 +204,8 @@ export default function SwapForAstro() {
                         </SubCard>
 
                     </Grid>
-                    <Grid container xs={12} sm={12} sx={{ padding: '0px 12px' }}>
-                        <SubCard item container>
+                    <Grid container item xs={12} sm={12} sx={{ padding: '0px 12px' }}>
+                        <SubCard>
                             <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{
                                     fontSize: '14px',

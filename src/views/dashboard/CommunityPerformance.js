@@ -6,7 +6,6 @@ import {
     Button
 } from '@mui/material';
 
-// project imports
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
@@ -20,8 +19,8 @@ export default function CommunityPerformance() {
                     flexWrap: 'wrap',
                     rowGap: '15px'
                 }}>
-                    <Grid xs={12} sm={6} sx={{ padding: '0px 12px' }}>
-                        <SubCard item container >
+                    <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
+                        <SubCard>
                             <Grid sx={{
                                 display: 'flex',
                                 flexDirection: 'row',
@@ -32,7 +31,7 @@ export default function CommunityPerformance() {
                                     fontSize: '16px',
                                     lineHeight: '35px'
                                 }}>ASTRO Price</Typography>
-                                <Typography item container sx={{
+                                <Typography sx={{
                                     alignSelf: 'center',
                                     backgroundColor: 'rgba(0,0,0,.1)',
                                     border: '1px solid #595959',
@@ -43,7 +42,7 @@ export default function CommunityPerformance() {
                                     textAlign: 'center'
                                 }}>-100.00%</Typography>
                             </Grid>
-                            <Typography item container sx={{
+                            <Typography sx={{
                                 color: '#4ed047',
                                 fontFamily: 'CenturyGothic',
                                 fontSize: '32px',
@@ -56,13 +55,13 @@ export default function CommunityPerformance() {
                             }}>$0</Typography>
                         </SubCard>
                     </Grid>
-                    <Grid xs={12} sm={6} sx={{ padding: '0px 12px' }}>
-                        <SubCard item container >
+                    <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
+                        <SubCard>
                             <Typography sx={{
                                 fontSize: '16px',
                                 lineHeight: '35px'
                             }}>Market Cap</Typography>
-                            <Typography item container sx={{
+                            <Typography sx={{
                                 fontFamily: 'CenturyGothicB',
                                 fontSize: '32px',
                                 lineHeight: '35px',
@@ -74,13 +73,13 @@ export default function CommunityPerformance() {
                             }}>$0</Typography>
                         </SubCard>
                     </Grid>
-                    <Grid xs={12} sm={6} sx={{ padding: '0px 12px' }}>
-                        <SubCard item container >
+                    <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
+                        <SubCard>
                             <Typography sx={{
                                 fontSize: '16px',
                                 lineHeight: '35px'
                             }}>APY</Typography>
-                            <Typography item container sx={{
+                            <Typography sx={{
                                 fontFamily: 'CenturyGothic',
                                 fontSize: '32px',
                                 lineHeight: '35px',
@@ -90,7 +89,7 @@ export default function CommunityPerformance() {
                                 whiteSpace: 'nowrap',
                                 marginBottom: '5px'
                             }}>100,003.37%</Typography>
-                            <Typography item container sx={{
+                            <Typography sx={{
                                 color: 'hsla(0,0%,100%,.8)',
                                 fontFamily: 'Poppins',
                                 fontSize: '16px',
@@ -99,13 +98,13 @@ export default function CommunityPerformance() {
                             }}>Daily % Rate (DPR): ~</Typography>
                         </SubCard>
                     </Grid>
-                    <Grid xs={12} sm={6} sx={{ padding: '0px 12px' }}>
-                        <SubCard item container >
+                    <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
+                        <SubCard>
                             <Typography sx={{
                                 fontSize: '16px',
                                 lineHeight: '35px'
                             }}>Total Holders</Typography>
-                            <Typography item container sx={{
+                            <Typography sx={{
                                 fontFamily: 'CenturyGothicB',
                                 fontSize: '32px',
                                 lineHeight: '35px',
@@ -125,7 +124,7 @@ export default function CommunityPerformance() {
                         height: '100%',
                         justifyContent: 'center'
                     }}>
-                        <SubCard item container >
+                        <SubCard>
                             <Grid item xs={12} sx={{
                                 display: 'flex',
                                 width: '100%',

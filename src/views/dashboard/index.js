@@ -4,7 +4,6 @@ import {
     Grid
 } from '@mui/material';
 
-// project imports
 import CommunityPerformance from './CommunityPerformance';
 import YourActivity from './YourActivity';
 
@@ -15,6 +14,5 @@ export default function Dashboard() {
             <CommunityPerformance />
             <YourActivity />
         </Grid>
-
     );
 }

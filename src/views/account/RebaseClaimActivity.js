@@ -11,78 +11,167 @@ import {
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
-export default function WhatToDo() {
+import astroIcon from 'assets/images/astro/astro-icon.png';
+
+export default function RebaseClaimActivity() {
 
     return (
-        <MainCard title="WHAT TO DO">
+        <MainCard title="REBASE & CLAIM ACTIVITY">
             <Grid container sx={{ rowGap: '15px' }}>
                 <Grid item container xs={12} md={12} sx={{
                     display: 'flex',
                     flexWrap: 'wrap',
                     rowGap: '15px'
                 }}>
-                    <Grid item xs={12} sm={12} sx={{ padding: '0px 12px' }}>
-                        <SubCard>
-                            <Typography sx={{
-                                fontSize: '14px',
-                                lineHeight: '35px',
-                                fontWeight: '600'
-                            }}>Steps to Financial Freedom with ASTRO</Typography>
-                            <Grid sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Typography sx={{
-                                    fontFamily: 'CenturyGothicB',
-                                    fontSize: '22px',
-                                    lineHeight: '35px',
-                                    marginRight: '6px',
-                                    whiteSpace: 'nowrap',
-                                    fontWeight: '700'
-                                }}>Step 1:</Typography>
-                                <Typography sx={{
-                                    fontSize: '16px',
-                                }}>Buy ASTRO</Typography>
-                            </Grid>
-                            <Grid sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Typography sx={{
-                                    fontFamily: 'CenturyGothicB',
-                                    fontSize: '22px',
-                                    lineHeight: '35px',
-                                    marginRight: '6px',
-                                    whiteSpace: 'nowrap',
-                                    fontWeight: '700'
-                                }}>Step 2:</Typography>
-                                <Typography sx={{
-                                    fontSize: '16px',
-                                }}>Simply hold your ASTRO for 100 Days and watch it auto-compound</Typography>
-                            </Grid>
-                            <Grid sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Typography sx={{
-                                    fontFamily: 'CenturyGothicB',
-                                    fontSize: '22px',
-                                    lineHeight: '35px',
-                                    marginRight: '6px',
-                                    whiteSpace: 'nowrap',
-                                    fontWeight: '700'
-                                }}>Step 3:</Typography>
-                                <Typography sx={{
-                                    fontSize: '16px',
-                                }}>After 100 days, begin claiming 1% of your ASTRO each day</Typography>
-                            </Grid>
-                        </SubCard>
+                    <Grid item xs={12} sm={5} sx={{ padding: '0px 12px' }}>
+                        <Grid sx={{
+                            padding: '0px 12px',
+                            height: '100%',
+                            justifyContent: 'center'
+                        }}>
+                            <SubCard>
+
+                                <Grid sx={{
+                                    height: '100%',
+                                    padding: '0px 12px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Typography sx={{
+                                        fontSize: '12px',
+                                        marginBottom: '5px'
+                                    }}>TIME UNTIL<br></br>NEXT REBASE</Typography>
+                                    <Typography sx={{
+                                        fontSize: '20px',
+                                        marginBottom: '5px'
+                                    }}>00:00</Typography>
+                                </Grid>
+                                <Grid sx={{
+                                    height: '100%',
+                                    padding: '0px 12px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Typography sx={{
+                                        fontSize: '16px',
+                                        marginBottom: '5px'
+                                    }}>NEXT REBASE AMOUNT</Typography>
+                                    <Typography sx={{
+                                        fontSize: '20px',
+                                        marginBottom: '5px'
+                                    }}>$0</Typography>
+                                    <Typography sx={{
+                                        fontSize: '12',
+                                        marginBottom: '5px',
+                                        color: '#bcc3cf'
+                                    }}>0 ASTRO</Typography>
+                                </Grid>
+                                <Grid sx={{
+                                    height: '100%',
+                                    padding: '0px 12px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Typography sx={{
+                                        fontSize: '14px',
+                                        marginBottom: '5px',
+                                        textAlign: 'center'
+                                    }}>ASTRO is auto-compounding</Typography>
+                                </Grid>
+                            </SubCard>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={12} sx={{ padding: '0px 12px' }}>
+                    <Grid item xs={12} sm={7} sx={{ padding: '0px 12px' }}>
                         <Typography sx={{
                             fontSize: '18px',
                             fontFamily: 'CenturyGothic',
                             fontWeight: '700',
                             marginTop: '0.5rem',
                             marginBottom: '0.25rem'
-                        }}>CALCULATOR</Typography>
+                        }}>Your Daily Claim Quote:</Typography>
                         <Typography sx={{
                             fontSize: '14px',
                             color: '#bcc3cf'
-                        }}>Estimate your returns based on today's performance</Typography>
+                        }}>If you choose to take your weekly claim, click below for 1% to maximize your growth. If you'd like to take more earnings, swap here.</Typography>
+                        <Grid sx={{
+                            margin: '1rem 0px',
+                            width: '100%',
+                            borderRadius: '10px',
+                            boxSizing: 'border-box',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            backgroundColor: '#151b34',
+                            border: '1px solid #5947ff',
+                            padding: '10px 15px',
+                        }}>
+                            <Grid sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem'
+                            }}>
+                                <img src={astroIcon} style={{ width: '30px', height: '30px' }} />
+                                <Typography sx={{
+                                    margin: '1px',
+                                    fontSize: '16px',
+                                    fontWeight: '400'
+                                }}>CLAIM ASTRO</Typography>
+                            </Grid>
+                            <Typography sx={{
+                                margin: '1px',
+                                fontSize: '28px',
+                                fontWeight: 'bold',
+                                color: 'rgb(255, 184, 77)'
+                            }}>0</Typography>
+                        </Grid>
+                        <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography sx={{
+                                fontSize: '15px',
+                                fontFamily: 'Poppins',
+                                fontWeight: '400',
+                            }}>Your Earnings/Daily: 1.91%</Typography>
+                            <Typography sx={{
+                                fontSize: '15px',
+                                fontFamily: 'Poppins',
+                                color: '#fff'
+                            }}>0 ($0)</Typography>
+                        </Grid>
+                        <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography sx={{
+                                fontSize: '15px',
+                                fontFamily: 'Poppins',
+                                fontWeight: '400',
+                            }}>Recommended Claim: 1%</Typography>
+                            <Typography sx={{
+                                fontSize: '15px',
+                                fontFamily: 'Poppins',
+                                color: '#fff'
+                            }}>0 ($0)</Typography>
+                        </Grid>
+                        <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography sx={{
+                                fontSize: '15px',
+                                fontFamily: 'Poppins',
+                                fontWeight: '400',
+                            }}>Claim Tax: 0%</Typography>
+                            <Typography sx={{
+                                fontSize: '15px',
+                                fontFamily: 'Poppins',
+                                color: '#fff'
+                            }}>0 ($0)</Typography>
+                        </Grid>
+                        <hr style={{
+                            height: '1px',
+                            background: '#ddd',
+                            margin: '0.5rem 0px',
+                        }} />
                     </Grid>
-                    <Grid item container xs={12} sm={12} sx={{
+                    <Grid item xs={12} sm={12} sx={{
                         display: 'flex',
                         flexWrap: 'wrap',
                         rowGap: '15px'
@@ -299,17 +388,6 @@ export default function WhatToDo() {
                                 }}
                             />
                         </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={12} sx={{ padding: '0px 12px' }}>
-                        <Typography sx={{
-                            fontSize: '14px',
-                            fontFamily: 'Poppins',
-                        }}>159 days</Typography>
-                        <Slider
-                            aria-label="Temperature"
-                            defaultValue={30}
-
-                        />
                     </Grid>
                     <Grid item xs={12} sm={12} sx={{ padding: '0px 16px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
