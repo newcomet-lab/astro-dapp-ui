@@ -35,10 +35,8 @@ export const AstroMoralisProvider = ({ children }) => {
 
 
     useEffect(() => {
-        const connectorId = window.localStorage.getItem("connectorId");
-        if (isAuthenticated && !isWeb3Enabled && !isWeb3EnableLoading)
-            enableWeb3({ provider: connectorId });
-    }, [isAuthenticated, isWeb3Enabled]);
+        enableWeb3();
+    }, []);
 
     const loadAPYAndROI = () => {
         try {
@@ -120,11 +118,11 @@ export const AstroMoralisProvider = ({ children }) => {
         let isUpdated = true;
         if (isUpdated) {
             (async () => {
-                if (isWeb3Enabled && account) loadAccountTokenBalance();
+                if (isWeb3Enabled && account && isAuthenticated) loadAccountTokenBalance();
             })();
         }
         return () => { isUpdated = false; };
-    }, [isWeb3Enabled, account]);
+    }, [isWeb3Enabled, account, isAuthenticated]);
 
     return <AstroMoralisContext.Provider
         value={[{ astroAPY, astroROI, accountTokenBalance }]}>
