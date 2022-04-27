@@ -7,7 +7,9 @@ import {
     Button,
     FormControl,
     Select,
-    MenuItem
+    MenuItem,
+    Modal,
+    TextField
 } from '@mui/material';
 
 import MainCard from 'ui-component/cards/MainCard';
@@ -24,10 +26,20 @@ export default function SwapForAstro() {
     const [flagExchange, setFlagExchange] = React.useState(true);
     const [flagSwapButton, setFlagSwapButton] = React.useState(true);
     const [selectedToken, setSelectedToken] = React.useState(0);
+    const [isOpenSlippage, setOpenSlippage] = React.useState(false);
 
     const handleSelectToken = (event) => {
         setSelectedToken(event.target.value)
     }
+
+    const handleOpenSlippageSetting = () => {
+        setOpenSlippage(true);
+    }
+
+    const handleCloseSlippageSetting = () => {
+        setOpenSlippage(false);
+    }
+
     return (
         <MainCard title="">
             <Grid container sx={{ rowGap: '12px' }}>
@@ -57,9 +69,145 @@ export default function SwapForAstro() {
                                             fontWeight: '400'
                                         }}>Buy ASTRO below using <b>AVAX</b> or <b>USDC</b></Typography>}
                                 </Grid>
-                                <ButtonBase variant="contained" sx={{ cursor: 'pointer' }}>
+                                <ButtonBase variant="contained" sx={{ cursor: 'pointer' }}
+                                    onClick={handleOpenSlippageSetting}>
                                     <IconSettings size='30px' color='rgb(255, 184, 77)' />
                                 </ButtonBase>
+                                <Modal
+                                    open={isOpenSlippage}
+                                    onClose={handleCloseSlippageSetting}
+                                    aria-labelledby="modal-modal-title"
+                                    aria-describedby="modal-modal-description"
+                                >
+                                    <Grid sx={{
+                                        position: 'absolute',
+                                        top: '50%',
+                                        left: '50%',
+                                        transform: 'translate(-50%, -50%)',
+                                        width: '400px',
+                                        backgroundColor: 'rgb(39, 28, 99)',
+                                        borderRadius: '20px',
+                                        boxshadow: 'rgb(0 0 0 / 20%) 0px 11px 15px -7px, rgb(0 0 0 / 14%) 0px 24px 38px 3px, rgb(0 0 0 / 12%) 0px 9px 46px 8px',
+                                        padding: '32px 24px',
+                                    }}>
+                                        <Typography sx={{
+                                            margin: '0px',
+                                            fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
+                                            fontWeight: '500',
+                                            fontSize: '1.25rem',
+                                            lineHeight: '1.6',
+                                            letterSpacing: '0.0075em',
+                                        }}>Settings</Typography>
+                                        <Grid sx={{ mt: '1rem', display: 'flex', flexDirection: 'column' }}>
+                                            <Typography sx={{
+                                                marginBottom: '1rem',
+                                                fontFamily: 'Poppins',
+                                                fontSize: '16px',
+                                                color: '#bcc3cf'
+                                            }}>Slippage tolerance</Typography>
+                                            <Grid sx={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                gap: '0.5rem'
+                                            }}>
+                                                <TextField
+                                                    defaultValue={'0.0'}
+                                                    tx={{
+                                                        '& .MuiInputBase-input.MuiOutlinedInput-input': {
+                                                            alignItems: 'center',
+                                                            backgroundColor: 'red',
+                                                            border: '1px solid #5947ff',
+                                                            borderRadius: '8px',
+                                                            display: 'flex',
+                                                            height: '40px',
+                                                            padding: '0px 20px',
+                                                            width: '100%',
+                                                        },
+                                                        '& .MuiInputBase-root.MuiOutlinedInput-root': {
+                                                            background: 'transparent',
+                                                        },
+                                                        '& .MuiOutlinedInput-notchedOutline': {
+                                                            borderColor: 'transparent'
+                                                        },
+                                                        '& .MuiFormLabel-root.MuiInputLabel-root': {
+                                                            color: 'red',
+                                                        },
+                                                        '& .MuiInputBase-root.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                                                            borderColor: 'transparent'
+                                                        },
+                                                        '& .MuiInputBase-root.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                            borderColor: 'transparent',
+                                                        }
+                                                    }}
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <Typography sx={{
+                                                                fontFamily: 'Poppins',
+                                                                fontSize: '20px',
+                                                            }}>%</Typography>
+                                                        ),
+                                                    }}
+                                                />
+
+                                                <Grid sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <ButtonBase
+                                                        sx={{
+                                                            cursor: 'pointer',
+                                                            height: '32px',
+                                                            borderRadius: '16px',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            paddingLeft: '12px',
+                                                            paddingRight: '12px',
+                                                            whiteSpace: 'nowrap',
+                                                            fontFamily: 'Poppins',
+                                                            fontSize: '18px',
+                                                            background: '#523bff'
+                                                        }}>0.1%</ButtonBase>
+                                                    <ButtonBase
+                                                        sx={{
+                                                            cursor: 'pointer',
+                                                            height: '32px',
+                                                            borderRadius: '16px',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            paddingLeft: '12px',
+                                                            paddingRight: '12px',
+                                                            whiteSpace: 'nowrap',
+                                                            fontFamily: 'Poppins',
+                                                            fontSize: '18px'
+                                                        }}>0.5%</ButtonBase>
+                                                    <ButtonBase
+                                                        sx={{
+                                                            cursor: 'pointer',
+                                                            height: '32px',
+                                                            borderRadius: '16px',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            paddingLeft: '12px',
+                                                            paddingRight: '12px',
+                                                            whiteSpace: 'nowrap',
+                                                            fontFamily: 'Poppins',
+                                                            fontSize: '18px'
+                                                        }}>1.0%</ButtonBase>
+                                                    <ButtonBase
+                                                        sx={{
+                                                            cursor: 'pointer',
+                                                            height: '32px',
+                                                            borderRadius: '16px',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            paddingLeft: '12px',
+                                                            paddingRight: '12px',
+                                                            whiteSpace: 'nowrap',
+                                                            fontFamily: 'Poppins',
+                                                            fontSize: '18px'
+                                                        }}>AUTO</ButtonBase>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </Modal>
                             </Grid>
                             <Grid sx={{
                                 display: 'flex',
@@ -276,7 +424,7 @@ export default function SwapForAstro() {
                         </SubCard>
                     </Grid>
                 </Grid>
-            </Grid>
+            </Grid >
         </MainCard >
     );
 }
