@@ -15,7 +15,7 @@ import { formatFloatFixed } from 'utils/helpers';
 import useAstroMoralis from 'hooks/useAstroMoralis';
 
 export default function YourActivity() {
-    const [{ astroAPY, astroROI }] = useAstroMoralis();
+    const [{ astroAPY, astroROI, accountTokenBalance }] = useAstroMoralis();
 
     const handleDexCharts = () => {
         window.open('https://dexscreener.com/avalanche/0x7de9d08b1281455aC2D2C6f30ad3B1C9e954b608');
@@ -153,7 +153,7 @@ export default function YourActivity() {
                                 margin: 0,
                                 textAlign: 'left',
                                 lineHeight: '35px'
-                            }}>0 ASTRO</Typography>
+                            }}>{accountTokenBalance ? accountTokenBalance : 0} ASTRO</Typography>
                         </SubCard>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>

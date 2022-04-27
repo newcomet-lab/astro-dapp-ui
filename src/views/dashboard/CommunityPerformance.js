@@ -23,15 +23,13 @@ export default function CommunityPerformance() {
     const theme = useTheme();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [{ astroAPY, astroROI, userBalance }] = useAstroMoralis();
+    const [{ astroAPY, astroROI }] = useAstroMoralis();
     const [{ loading, astroPrice, holdersCount }] = useDataService();
     
     let navigate = useNavigate();
     const handleWeeklyClaim = () => {
         navigate('account');
     }
-
-    console.log('userBalance=========>', userBalance)
     
     return (
         <MainCard title="COMMUNITY PERFORMANCE">
@@ -76,7 +74,7 @@ export default function CommunityPerformance() {
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
                                     margin: '1rem 0px'
-                                }}>${numberWithCommas(astroPrice)}</Typography>}
+                                }}>{astroPrice ? `$${numberWithCommas(astroPrice)}` : '-'}</Typography>}
                         </SubCard>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
@@ -94,7 +92,7 @@ export default function CommunityPerformance() {
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
                                 margin: '1rem 0px'
-                            }}>{userBalance ?  userBalance: '0'}</Typography>
+                            }}>10</Typography>
                         </SubCard>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>

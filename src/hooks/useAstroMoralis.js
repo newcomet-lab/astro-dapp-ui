@@ -1,51 +1,58 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { useApiContract } from "react-moralis";
+import { useApiContract, useMoralis } from "react-moralis";
 
 import ASTRO_ABI from '_common/astro-abi.json';
-import { astroTokenAddress } from '_common/address';
+import { astroTokenAddress, astroTokenDecimals } from '_common/token-constants';
 
-import { calcAPY, formatFloatFixed } from 'utils/helpers';
+import { calcAPY, getNumberFromBN } from 'utils/helpers';
 
 const AstroMoralisContext = createContext(null);
 
 const commonAstroApiObj = { abi: ASTRO_ABI, address: astroTokenAddress, chain: 'avalanche', params: {} };
+
 const rewardApiOpt = { ...commonAstroApiObj, functionName: "rewardYield" };
 const rewardDominatorApiOpt = { ...commonAstroApiObj, functionName: "rewardYieldDenominator" };
 const rebaseFrequencyApiOpt = { ...commonAstroApiObj, functionName: "rebaseFrequency" };
-
-const AstroApiWithWalletObj = { abi: ASTRO_ABI, address: astroTokenAddress, chain: 'avalanche', params: {address:'0x7aBECf139C1e98D1019b33369333259844D61718'} };
-const userBalanceApiOpt = { ...AstroApiWithWalletObj, functionName: "balanceOf" };
+const accountTokenBalanceApiOpt = { ...commonAstroApiObj, functionName: "balanceOf" };
 
 export default function useAstroMoralis() {
-    const [{ astroAPY, astroROI, userBalance }] = useContext(AstroMoralisContext);
-    return [{ astroAPY, astroROI, userBalance }]
+    const [{ astroAPY, astroROI, accountTokenBalance }] = useContext(AstroMoralisContext);
+    return [{ astroAPY, astroROI, accountTokenBalance }]
 }
 
 export const AstroMoralisProvider = ({ children }) => {
     const [astroAPY, setAstroAPY] = useState(null);
     const [astroROI, setAstroROI] = useState(null);
-    const [userBalance, setUserBalance] = useState(null);
+    const [accountTokenBalance, setAccountTokenBalance] = useState(null);
+
+    const { isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading, account } = useMoralis();
 
     const rewardApiObj = useApiContract(rewardApiOpt);
     const rewardDominatorApiObj = useApiContract(rewardDominatorApiOpt);
     const rebaseFrequencyApiObj = useApiContract(rebaseFrequencyApiOpt);
-    const userBalanceApiObj = useApiContract(userBalanceApiOpt);
+    const accountTokenBalanceApiObj = useApiContract({...accountTokenBalanceApiOpt, params: { who: account }});
 
-    const loadAPYAndROI = async () => {
+
+    useEffect(() => {
+        const connectorId = window.localStorage.getItem("connectorId");
+        if (isAuthenticated && !isWeb3Enabled && !isWeb3EnableLoading)
+            enableWeb3({ provider: connectorId });
+    }, [isAuthenticated, isWeb3Enabled]);
+
+    const loadAPYAndROI = () => {
         try {
-            await rewardApiObj.runContractFunction();
-            await rewardDominatorApiObj.runContractFunction();
-            await rebaseFrequencyApiObj.runContractFunction();
-            await rewardApiObj.runContractFunction();   // cuz of some issue
+            rewardApiObj.runContractFunction();
+            rewardDominatorApiObj.runContractFunction();
+            rebaseFrequencyApiObj.runContractFunction();
         } catch (e) {
             console.log(e);
         }
     }
 
-    const getUserBalance = async () => {
+    const loadAccountTokenBalance = () => {
         try {
-            await userBalanceApiObj.runContractFunction();
+            accountTokenBalanceApiObj.runContractFunction();
         } catch (e) {
             console.log(e);
         }
@@ -79,41 +86,48 @@ export const AstroMoralisProvider = ({ children }) => {
                     );
                 }
             })();
-            (async () => {
-                if (!userBalanceApiOpt.isFetching && userBalanceApiOpt.data) {
-                    setUserBalance(
-                        formatFloatFixed(userBalanceApiObj.data, 2)
-                    );
-                }
-            })();
         }
         return () => { isUpdated = false; };
     }, [
         rewardApiObj.data, rewardApiObj.isFetching,
         rewardDominatorApiObj.data, rewardDominatorApiObj.isFetching,
         rebaseFrequencyApiObj.data, rebaseFrequencyApiObj.isFetching,
-        userBalanceApiOpt.data, userBalanceApiOpt.isFetching,
     ]);
 
     useEffect(() => {
         let isUpdated = true;
         if (isUpdated) {
             (async () => {
-                if (rewardApiObj && rewardDominatorApiObj && rebaseFrequencyApiObj) {
-                    await loadAPYAndROI();
-                }
-            })();
-            (async () => {
-                if (userBalanceApiObj) {
-                    await getUserBalance();
+                if (!accountTokenBalanceApiObj.isFetching && accountTokenBalanceApiObj.data) {
+                    setAccountTokenBalance(getNumberFromBN(accountTokenBalanceApiObj.data, astroTokenDecimals));
                 }
             })();
         }
         return () => { isUpdated = false; };
-    }, []);
+    }, [ accountTokenBalanceApiObj.isFetching, accountTokenBalanceApiObj.data ]);
+
+    useEffect(() => {
+        let isUpdated = true;
+        if (isUpdated) {
+            (async () => {
+                if (isWeb3Enabled) loadAPYAndROI();
+            })();
+        }
+        return () => { isUpdated = false; };
+    }, [isWeb3Enabled]);
+
+    useEffect(() => {
+        let isUpdated = true;
+        if (isUpdated) {
+            (async () => {
+                if (isWeb3Enabled && account) loadAccountTokenBalance();
+            })();
+        }
+        return () => { isUpdated = false; };
+    }, [isWeb3Enabled, account]);
 
     return <AstroMoralisContext.Provider
-        value={[{ astroAPY, astroROI, userBalance }]}>
+        value={[{ astroAPY, astroROI, accountTokenBalance }]}>
         {children}
     </AstroMoralisContext.Provider>
 }
