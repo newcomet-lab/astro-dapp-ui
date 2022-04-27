@@ -22,11 +22,14 @@ import avaxIcon from 'assets/images/astro/avax.png';
 import usdcIcon from 'assets/images/astro/usdc.png';
 import astroIcon from 'assets/images/astro/astro-icon.png';
 
+const regexFloat = /^\d+(\.\d{0,9})?$|^$/;
+
 export default function SwapForAstro() {
-    const [flagExchange, setFlagExchange] = React.useState(true);
-    const [flagSwapButton, setFlagSwapButton] = React.useState(true);
     const [selectedToken, setSelectedToken] = React.useState(0);
     const [isOpenSlippage, setOpenSlippage] = React.useState(false);
+    const [isAvaxToAstro, setAvaxToAstro] = React.useState(true);
+    const [slipable, setSlipable] = React.useState(0.1);
+    const [customSlipable, setCustomSlipable] = React.useState('');
 
     const handleSelectToken = (event) => {
         setSelectedToken(event.target.value)
@@ -38,6 +41,132 @@ export default function SwapForAstro() {
 
     const handleCloseSlippageSetting = () => {
         setOpenSlippage(false);
+    }
+
+    const handleAvaxToAstro = () => {
+        setAvaxToAstro(!isAvaxToAstro);
+    }
+
+    const handleSlipPercent = (percent) => {
+        percent === 'AUTO' ? setSlipable(1.0) : setSlipable(percent);
+    }
+
+    const handleCustomSlipPercent = (event) => {
+        console.log("================>", !regexFloat.test(event.target.value));
+        if (!regexFloat.test(event.target.value)) {
+            return;
+        } else {
+            setCustomSlipable(event.target.value);
+            setSlipable(event.target.value);
+        }
+
+    }
+
+    const AvaxFormControl = <FormControl>
+        <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={selectedToken}
+            onChange={handleSelectToken}
+            sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#686085',
+                    borderRadius: '5px',
+                    borderWidth: 1,
+                    overflow: 'hidden'
+                },
+                '& .MuiSelect-select.MuiInputBase-input.MuiOutlinedInput-input': {
+                    overflow: 'hidden',
+                    padding: '10px',
+                    background: 'rgba(21, 27, 52, 0.3)',
+                },
+
+                background: 'linear-gradient(6.49deg, #271C2B -1.79%, #222546 88.58%)',
+                height: '40px'
+            }}
+        >
+            <MenuItem value={0} sx={{ borderRadius: '5px' }}>
+                <Grid sx={{ display: 'flex' }}>
+                    <img src={avaxIcon} style={{ width: '30px', height: '30px' }} />
+                    <Typography sx={{
+                        fontFamily: 'Poppins',
+                        fontSize: '18px',
+                        fontWeight: '400',
+                        cursor: 'pointer',
+                        marginLeft: '8px'
+                    }}>AVAX</Typography>
+                </Grid>
+            </MenuItem>
+            <MenuItem value={1} sx={{ borderRadius: '5px' }}>
+                <Grid sx={{ display: 'flex' }}>
+                    <img src={usdcIcon} style={{ width: '30px', height: '30px' }} />
+                    <Typography sx={{
+                        fontFamily: 'Poppins',
+                        fontSize: '18px',
+                        fontWeight: '400',
+                        cursor: 'pointer',
+                        marginLeft: '8px'
+                    }}>USDC</Typography>
+                </Grid>
+            </MenuItem>
+        </Select>
+    </FormControl>
+
+    const AstroFormControl = <FormControl>
+        <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={selectedToken}
+            onChange={handleSelectToken}
+            sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#686085',
+                    borderRadius: '5px',
+                    borderWidth: 1,
+                    overflow: 'hidden'
+                },
+                '& .MuiSelect-select.MuiInputBase-input.MuiOutlinedInput-input': {
+                    overflow: 'hidden',
+                    padding: '4px',
+                    background: 'rgba(21, 27, 52, 0.3)',
+                },
+
+                background: 'linear-gradient(6.49deg, #271C2B -1.79%, #222546 88.58%)',
+                height: '40px'
+            }}
+        >
+            <MenuItem value={0} sx={{ borderRadius: '5px' }}>
+                <Grid sx={{ display: 'flex' }}>
+                    <img src={astroIcon} style={{ width: '30px', height: '30px' }} />
+                    <Typography sx={{
+                        fontFamily: 'Poppins',
+                        fontSize: '18px',
+                        fontWeight: '400',
+                        cursor: 'pointer',
+                        marginLeft: '8px'
+                    }}>ASTRO</Typography>
+                </Grid>
+            </MenuItem>
+        </Select>
+    </FormControl>
+
+    const SplippageButton = (percent) => {
+        return <ButtonBase
+            sx={{
+                cursor: 'pointer',
+                height: '32px',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                paddingLeft: '12px',
+                paddingRight: '12px',
+                whiteSpace: 'nowrap',
+                fontFamily: 'Poppins',
+                fontSize: '18px',
+                background: percent === slipable ? '#523bff' : 'transparent'
+            }}
+            onClick={() => handleSlipPercent(percent)}
+        >{percent === 'AUTO' ? 'AUTO' : `${percent}%`}</ButtonBase>
     }
 
     return (
@@ -59,15 +188,15 @@ export default function SwapForAstro() {
                                         fontWeight: '700',
                                         letterSpacing: '1px'
                                     }}>SWAP FOR ASTRO</Typography>
-                                    {flagExchange ?
+                                    {isAvaxToAstro ?
                                         <Typography sx={{
                                             fontSize: '14px',
                                             fontWeight: '400'
-                                        }}>Sell <b>ASTRO</b> below</Typography> :
+                                        }}>Buy ASTRO below using <b>AVAX</b> or <b>USDC</b></Typography> :
                                         <Typography sx={{
                                             fontSize: '14px',
                                             fontWeight: '400'
-                                        }}>Buy ASTRO below using <b>AVAX</b> or <b>USDC</b></Typography>}
+                                        }}>Sell <b>ASTRO</b> below</Typography>}
                                 </Grid>
                                 <ButtonBase variant="contained" sx={{ cursor: 'pointer' }}
                                     onClick={handleOpenSlippageSetting}>
@@ -111,7 +240,7 @@ export default function SwapForAstro() {
                                                 gap: '0.5rem'
                                             }}>
                                                 <TextField
-                                                    defaultValue={'0.0'}
+                                                    placeholder='0.0'
                                                     tx={{
                                                         '& .MuiInputBase-input.MuiOutlinedInput-input': {
                                                             alignItems: 'center',
@@ -147,62 +276,15 @@ export default function SwapForAstro() {
                                                             }}>%</Typography>
                                                         ),
                                                     }}
+                                                    value={customSlipable}
+                                                    onChange={handleCustomSlipPercent}
                                                 />
 
                                                 <Grid sx={{ display: 'flex', alignItems: 'center' }}>
-                                                    <ButtonBase
-                                                        sx={{
-                                                            cursor: 'pointer',
-                                                            height: '32px',
-                                                            borderRadius: '16px',
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            paddingLeft: '12px',
-                                                            paddingRight: '12px',
-                                                            whiteSpace: 'nowrap',
-                                                            fontFamily: 'Poppins',
-                                                            fontSize: '18px',
-                                                            background: '#523bff'
-                                                        }}>0.1%</ButtonBase>
-                                                    <ButtonBase
-                                                        sx={{
-                                                            cursor: 'pointer',
-                                                            height: '32px',
-                                                            borderRadius: '16px',
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            paddingLeft: '12px',
-                                                            paddingRight: '12px',
-                                                            whiteSpace: 'nowrap',
-                                                            fontFamily: 'Poppins',
-                                                            fontSize: '18px'
-                                                        }}>0.5%</ButtonBase>
-                                                    <ButtonBase
-                                                        sx={{
-                                                            cursor: 'pointer',
-                                                            height: '32px',
-                                                            borderRadius: '16px',
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            paddingLeft: '12px',
-                                                            paddingRight: '12px',
-                                                            whiteSpace: 'nowrap',
-                                                            fontFamily: 'Poppins',
-                                                            fontSize: '18px'
-                                                        }}>1.0%</ButtonBase>
-                                                    <ButtonBase
-                                                        sx={{
-                                                            cursor: 'pointer',
-                                                            height: '32px',
-                                                            borderRadius: '16px',
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            paddingLeft: '12px',
-                                                            paddingRight: '12px',
-                                                            whiteSpace: 'nowrap',
-                                                            fontFamily: 'Poppins',
-                                                            fontSize: '18px'
-                                                        }}>AUTO</ButtonBase>
+                                                    {SplippageButton(0.1)}
+                                                    {SplippageButton(0.5)}
+                                                    {SplippageButton(1.0)}
+                                                    {SplippageButton('AUTO')}
                                                 </Grid>
                                             </Grid>
                                         </Grid>
@@ -233,48 +315,51 @@ export default function SwapForAstro() {
                                         cursor: 'pointer'
                                     }}>Balance: 0</Typography>
                                 </Grid>
-                                <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <Typography sx={{
                                         fontFamily: 'Poppins',
                                         fontSize: '18px',
                                         fontWeight: '400',
                                     }}>0</Typography>
-                                    <FormControl>
-                                        <Select
-                                            labelId="demo-simple-select-autowidth-label"
-                                            id="demo-simple-select-autowidth"
-                                            value={selectedToken}
-                                            onChange={handleSelectToken}
-                                        >
-                                            <MenuItem value={0} sx={{ backgroundColor: 'black', borderRadius: '5px' }}>
-                                                <Grid sx={{ display: 'flex' }}>
-                                                    <img src={avaxIcon} style={{ width: '30px', height: '30px' }} />
-                                                    <Typography sx={{
-                                                        fontFamily: 'Poppins',
-                                                        fontSize: '18px',
-                                                        fontWeight: '400',
-                                                        cursor: 'pointer',
-                                                        marginLeft: '8px'
-                                                    }}>AVAX</Typography>
-                                                </Grid>
-                                            </MenuItem>
-                                            <MenuItem value={1} sx={{ backgroundColor: 'black', borderRadius: '5px' }}>
-                                                <Grid sx={{ display: 'flex' }}>
-                                                    <img src={usdcIcon} style={{ width: '30px', height: '30px' }} />
-                                                    <Typography sx={{
-                                                        fontFamily: 'Poppins',
-                                                        fontSize: '18px',
-                                                        fontWeight: '400',
-                                                        cursor: 'pointer',
-                                                        marginLeft: '8px'
-                                                    }}>USDC</Typography>
-                                                </Grid>
-                                            </MenuItem>
-                                        </Select>
-                                    </FormControl>
+                                    <Grid sx={{ display: 'flex', alignItems: 'center' }}>
+                                        {isAvaxToAstro
+                                            ? <ButtonBase variant="contained" sx={{
+                                                cursor: 'pointer',
+                                                marginRight: '6px',
+                                                padding: '8px',
+                                                borderRadius: '10px',
+                                                color: 'rgb(255, 184, 77)',
+                                                '&:hover': {
+                                                    background: 'rgb(76, 52, 134)',
+                                                }
+                                            }}>MAX</ButtonBase>
+                                            : <>
+                                                <ButtonBase variant="contained" sx={{
+                                                    cursor: 'pointer',
+                                                    marginRight: '6px',
+                                                    padding: '8px',
+                                                    borderRadius: '10px',
+                                                    color: 'rgb(255, 184, 77)',
+                                                    '&:hover': {
+                                                        background: 'rgb(76, 52, 134)',
+                                                    }
+                                                }}>20%</ButtonBase>
+                                                <ButtonBase variant="contained" sx={{
+                                                    cursor: 'pointer',
+                                                    marginRight: '6px',
+                                                    padding: '8px',
+                                                    borderRadius: '10px',
+                                                    color: 'rgb(255, 184, 77)',
+                                                    '&:hover': {
+                                                        background: 'rgb(76, 52, 134)',
+                                                    }
+                                                }}>50%</ButtonBase>
+                                            </>}
+                                        {isAvaxToAstro ? AvaxFormControl : AstroFormControl}
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid sx={{
+                            <ButtonBase sx={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -283,10 +368,11 @@ export default function SwapForAstro() {
                                 margin: 'auto',
                                 marginTop: '1rem',
                                 borderRadius: '20px',
-                                background: 'rgb(255, 184, 77)'
-                            }}>
+                                background: 'rgb(255, 184, 77)',
+                                cursor: 'pointer'
+                            }} onClick={handleAvaxToAstro}>
                                 <IconArrowsUpDown size='24px' color='rgba(0, 0, 0, 0.54)' />
-                            </Grid>
+                            </ButtonBase>
                             <Grid sx={{
                                 display: 'flex',
                                 backgroundColor: 'rgba(21, 27, 52, 0.3)',
@@ -317,12 +403,9 @@ export default function SwapForAstro() {
                                         fontSize: '18px',
                                         fontWeight: '400',
                                     }}>0</Typography>
-                                    <Typography sx={{
-                                        fontFamily: 'Poppins',
-                                        fontSize: '18px',
-                                        fontWeight: '400',
-                                        cursor: 'pointer'
-                                    }}>AVAX</Typography>
+                                    <Grid sx={{ display: 'flex', alignItems: 'center' }}>
+                                        {!isAvaxToAstro ? AvaxFormControl : AstroFormControl}
+                                    </Grid>
                                 </Grid>
                             </Grid>
                             <Grid sx={{ marginTop: '1rem' }}>
@@ -344,13 +427,13 @@ export default function SwapForAstro() {
                                     <Typography sx={{
                                         fontSize: '16px',
                                         fontFamily: 'Poppins'
-                                    }}>1%</Typography>
+                                    }}>{slipable}%</Typography>
                                 </Grid>
                                 <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <Typography sx={{
                                         fontSize: '14px',
                                         marginBottom: '5px'
-                                    }}>Buy Tax (15%)</Typography>
+                                    }}>{isAvaxToAstro ? 'Buy Tax (15%)' : 'Sell Tax (30%)'}</Typography>
                                     <Typography sx={{
                                         fontSize: '16px',
                                         fontFamily: 'Poppins'
