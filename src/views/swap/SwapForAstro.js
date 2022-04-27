@@ -4,7 +4,10 @@ import {
     Grid,
     Typography,
     ButtonBase,
-    Button
+    Button,
+    FormControl,
+    Select,
+    MenuItem
 } from '@mui/material';
 
 import MainCard from 'ui-component/cards/MainCard';
@@ -12,12 +15,19 @@ import SubCard from 'ui-component/cards/SubCard';
 
 import { IconArrowsUpDown, IconSettings } from '@tabler/icons';
 
-
 import metamaskIcon from 'assets/images/astro/metamask.png';
+import avaxIcon from 'assets/images/astro/avax.png';
+import usdcIcon from 'assets/images/astro/usdc.png';
+import astroIcon from 'assets/images/astro/astro-icon.png';
 
 export default function SwapForAstro() {
     const [flagExchange, setFlagExchange] = React.useState(true);
     const [flagSwapButton, setFlagSwapButton] = React.useState(true);
+    const [selectedToken, setSelectedToken] = React.useState(0);
+
+    const handleSelectToken = (event) => {
+        setSelectedToken(event.target.value)
+    }
     return (
         <MainCard title="">
             <Grid container sx={{ rowGap: '12px' }}>
@@ -81,12 +91,39 @@ export default function SwapForAstro() {
                                         fontSize: '18px',
                                         fontWeight: '400',
                                     }}>0</Typography>
-                                    <Typography sx={{
-                                        fontFamily: 'Poppins',
-                                        fontSize: '18px',
-                                        fontWeight: '400',
-                                        cursor: 'pointer'
-                                    }}>ASTRO</Typography>
+                                    <FormControl>
+                                        <Select
+                                            labelId="demo-simple-select-autowidth-label"
+                                            id="demo-simple-select-autowidth"
+                                            value={selectedToken}
+                                            onChange={handleSelectToken}
+                                        >
+                                            <MenuItem value={0} sx={{ backgroundColor: 'black', borderRadius: '5px' }}>
+                                                <Grid sx={{ display: 'flex' }}>
+                                                    <img src={avaxIcon} style={{ width: '30px', height: '30px' }} />
+                                                    <Typography sx={{
+                                                        fontFamily: 'Poppins',
+                                                        fontSize: '18px',
+                                                        fontWeight: '400',
+                                                        cursor: 'pointer',
+                                                        marginLeft: '8px'
+                                                    }}>AVAX</Typography>
+                                                </Grid>
+                                            </MenuItem>
+                                            <MenuItem value={1} sx={{ backgroundColor: 'black', borderRadius: '5px' }}>
+                                                <Grid sx={{ display: 'flex' }}>
+                                                    <img src={usdcIcon} style={{ width: '30px', height: '30px' }} />
+                                                    <Typography sx={{
+                                                        fontFamily: 'Poppins',
+                                                        fontSize: '18px',
+                                                        fontWeight: '400',
+                                                        cursor: 'pointer',
+                                                        marginLeft: '8px'
+                                                    }}>USDC</Typography>
+                                                </Grid>
+                                            </MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                             </Grid>
                             <Grid sx={{
@@ -100,7 +137,7 @@ export default function SwapForAstro() {
                                 borderRadius: '20px',
                                 background: 'rgb(255, 184, 77)'
                             }}>
-                                <IconArrowsUpDown size='24px' color='rgba(0, 0, 0, 0.54)'/>
+                                <IconArrowsUpDown size='24px' color='rgba(0, 0, 0, 0.54)' />
                             </Grid>
                             <Grid sx={{
                                 display: 'flex',
