@@ -306,31 +306,33 @@ export default function WhatToDo() {
                             fontSize: '14px',
                             fontFamily: 'Poppins',
                         }}>{dayCounter} days</Typography>
-                        <Slider
-                            aria-label="Temperature"
-                            min={1}
-                            max={365}
-                            step={1}
-                            value={dayCounter}
-                            onChange={(e, val) => {setDayCounter(val);}}
-                            sx={{
-                                '& .MuiSlider-thumb': {
-                                    background: '#1976d1',
-                                    border: '3px solid #7a1bff',
-                                    height: '28px',
-                                    width: '28px',
-                                },
-                                height: '12px',
-                                '& .MuiSlider-track': {
-                                    border: '1px solid #1976d1',
-                                    background: 'linear-gradient(180deg,#7929ff,#5c44ff)'
-                                },
-                                '& .MuiSlider-rail': {
-                                    border: '2px solid #5c44ff',
-                                    background: '#113c70',
-                                },
-                            }}
-                        />
+                        <Grid item xs={12} sm={12} sx={{ padding: '0px 12px' }}>
+                            <Slider
+                                aria-label="Temperature"
+                                min={1}
+                                max={365}
+                                step={1}
+                                value={dayCounter}
+                                onChange={(e, val) => { setDayCounter(val); }}
+                                sx={{
+                                    '& .MuiSlider-thumb': {
+                                        background: '#1976d1',
+                                        border: '3px solid #7a1bff',
+                                        height: '28px',
+                                        width: '28px',
+                                    },
+                                    height: '12px',
+                                    '& .MuiSlider-track': {
+                                        border: '1px solid #1976d1',
+                                        background: 'linear-gradient(180deg,#7929ff,#5c44ff)'
+                                    },
+                                    '& .MuiSlider-rail': {
+                                        border: '2px solid #5c44ff',
+                                        background: '#113c70',
+                                    },
+                                }}
+                            />
+                        </Grid>
                     </Grid>
                     <Grid item xs={12} sm={12} sx={{ padding: '0px 16px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
