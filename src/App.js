@@ -13,8 +13,11 @@ import { MoralisProvider } from "react-moralis";
 import { AstroMoralisProvider } from 'hooks/useAstroMoralis';
 import { DataServiceProvider } from 'hooks/useDataService';
 
-const APP_ID = 'A4qAxwZeN4amP0v4JFiqnAGFxsJRhOu4rCoDCDdQ';
-const SERVER_URL = 'https://v1itj0kwswny.usemoralis.com:2053/server';
+// const APP_ID = 'A4qAxwZeN4amP0v4JFiqnAGFxsJRhOu4rCoDCDdQ';
+// const SERVER_URL = 'https://v1itj0kwswny.usemoralis.com:2053/server';
+
+const APP_ID = 'd2384pFLUIXl50qhFvU75Vtn5bHXf9Lknbxx1Oi0';
+const SERVER_URL = 'https://dsmlteqxlkxz.usemoralis.com:2053/server';
 // const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
 // const SERVER_URL = process.env.REACT_APP_MORALIS_SERVER_URL;
 
