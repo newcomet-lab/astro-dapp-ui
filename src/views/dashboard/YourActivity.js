@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
     Grid,
@@ -15,6 +16,15 @@ import useAstroMoralis from 'hooks/useAstroMoralis';
 
 export default function YourActivity() {
     const [{ astroAPY, astroROI }] = useAstroMoralis();
+
+    const handleDexCharts = () => {
+        window.open('https://dexscreener.com/avalanche/0x7de9d08b1281455aC2D2C6f30ad3B1C9e954b608');
+    }
+
+    let navigate = useNavigate();
+    const handleBuyAstro = () => {
+        navigate('swap');
+    }
 
     return (
         <MainCard title="YOUR ACTIVITY">
@@ -64,9 +74,9 @@ export default function YourActivity() {
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
                             }}>{
-                                astroAPY ? formatFloatFixed(astroAPY, 2) + '%'
-                                    : <Skeleton variant="rectangular" width={'100%'} height={35} />
-                            }</Typography>
+                                    astroAPY ? formatFloatFixed(astroAPY, 2) + '%'
+                                        : <Skeleton variant="rectangular" width={'100%'} height={35} />
+                                }</Typography>
                             <Typography sx={{
                                 color: 'hsla(0,0%,100%,.8)',
                                 fontFamily: 'Poppins',
@@ -74,9 +84,9 @@ export default function YourActivity() {
                                 margin: 0,
                                 textAlign: 'left',
                             }}>Daily % Rate (DPR): {
-                                astroROI ? formatFloatFixed(astroROI, 2) + '%'
-                                    : <Skeleton variant="rectangular" width={'100%'} height={24} />
-                            }</Typography>
+                                    astroROI ? formatFloatFixed(astroROI, 2) + '%'
+                                        : <Skeleton variant="rectangular" width={'100%'} height={24} />
+                                }</Typography>
                         </SubCard>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
@@ -165,7 +175,8 @@ export default function YourActivity() {
                                 boxShadow: '1px 1px 10px 0 #fa34b2',
                                 transition: 'all .3s ease'
                             }
-                        }}>DEX Charts</Button>
+                        }}
+                            onClick={handleDexCharts}>DEX Charts</Button>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
                         <Button variant="contained" sx={{
@@ -184,7 +195,8 @@ export default function YourActivity() {
                                 boxShadow: '1px 1px 10px 0 #fa34b2',
                                 transition: 'all .3s ease'
                             }
-                        }}>Buy ASTRO</Button>
+                        }}
+                            onClick={handleBuyAstro}>Buy ASTRO</Button>
                     </Grid>
                 </Grid>
 

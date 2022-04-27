@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { useApiContract } from "react-moralis";
+import { useApiContract, useMoralisWeb3Api, useMoralisWeb3ApiCall } from "react-moralis";
 
 import ASTRO_ABI from '_common/astro-abi.json';
 import { astroTokenAddress } from '_common/address';
@@ -27,6 +27,11 @@ export const AstroMoralisProvider = ({ children }) => {
     const rewardDominatorApiObj = useApiContract(rewardDominatorApiOpt);
     const rebaseFrequencyApiObj = useApiContract(rebaseFrequencyApiOpt);
 
+    const Web3Api = useMoralisWeb3Api();
+    const { fetch, data, error, isLoading } = useMoralisWeb3ApiCall(
+        Web3Api.account.getTokenBalances
+    );
+
     const loadAPYAndROI = async () => {
         try {
             await rewardApiObj.runContractFunction();
@@ -38,7 +43,18 @@ export const AstroMoralisProvider = ({ children }) => {
         }
     }
 
+    const fetchBalance = () => {
+        fetch();
+    
+        if (data) {
+            console.log("data>>>>>>>>>>>>>>>>>>", data);
+        } else if (error) {
+            console.log("error>>>>>>>>>>>>>>>>>>",error);
+        }
+    };
+
     useEffect(() => {
+        fetchBalance();
         let isUpdated = true;
         if (isUpdated) {
             (async () => {
@@ -69,8 +85,8 @@ export const AstroMoralisProvider = ({ children }) => {
         }
         return () => { isUpdated = false; };
     }, [rewardApiObj.data, rewardApiObj.isFetching,
-        rewardDominatorApiObj.data, rewardDominatorApiObj.isFetching,
-        rebaseFrequencyApiObj.data, rebaseFrequencyApiObj.isFetching]);
+    rewardDominatorApiObj.data, rewardDominatorApiObj.isFetching,
+    rebaseFrequencyApiObj.data, rebaseFrequencyApiObj.isFetching]);
 
     useEffect(() => {
         let isUpdated = true;

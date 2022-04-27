@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
     Grid,
@@ -24,7 +25,12 @@ export default function CommunityPerformance() {
 
     const [{ astroAPY, astroROI }] = useAstroMoralis();
     const [{ loading, astroPrice, holdersCount }] = useDataService();
-
+    
+    let navigate = useNavigate();
+    const handleWeeklyClaim = () => {
+        navigate('account');
+    }
+    
     return (
         <MainCard title="COMMUNITY PERFORMANCE">
             <Grid container sx={{ rowGap: '15px' }}>
@@ -95,19 +101,20 @@ export default function CommunityPerformance() {
                                 fontSize: '16px',
                                 lineHeight: '35px'
                             }}>APY</Typography>
-                            <Typography sx={{
-                                fontFamily: 'CenturyGothic',
-                                fontSize: '32px',
-                                lineHeight: '35px',
-                                overflow: 'hidden',
-                                textAlign: 'left',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                                marginBottom: '5px'
-                            }}>{
-                                    astroAPY ? formatFloatFixed(astroAPY, 2) + '%'
-                                        : <Skeleton variant="rectangular" width={'100%'} height={35} />
-                                }</Typography>
+                            {
+                                astroAPY
+                                    ? <Typography sx={{
+                                        fontFamily: 'CenturyGothic',
+                                        fontSize: '32px',
+                                        lineHeight: '35px',
+                                        overflow: 'hidden',
+                                        textAlign: 'left',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        marginBottom: '5px'
+                                    }}>{formatFloatFixed(astroAPY, 2) + '%'}</Typography>
+                                    : <Skeleton variant="rectangular" width={'100%'} height={35} />
+                            }
 
                             <Typography sx={{
                                 color: 'hsla(0,0%,100%,.8)',
@@ -224,7 +231,8 @@ export default function CommunityPerformance() {
                                             boxShadow: '1px 1px 10px 0 #fa34b2',
                                             transition: 'all .3s ease'
                                         }
-                                    }}>Weekly Claim (1%)</Button>
+                                    }}
+                                    onClick={handleWeeklyClaim}>Weekly Claim (1%)</Button>
                                     <Typography sx={{
                                         fontSize: '14px',
                                         marginBottom: '5px',

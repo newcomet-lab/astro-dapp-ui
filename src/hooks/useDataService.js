@@ -21,10 +21,10 @@ export const DataServiceProvider = ({ children }) => {
         try {
             const { data: response } = await axios.get(ASTRO_PRICE_URL);
             setAstroPrice(response);
+            setLoading(false);
         } catch (error) {
             console.error(error)
         }
-        setLoading(false);
     };
 
     const getTotalHolders = async () => {
@@ -32,10 +32,10 @@ export const DataServiceProvider = ({ children }) => {
         try {
             const { data: response } = await axios.get(TOTAL_HOLDERS_URL);
             setHoldersCount(response.data.pagination.total_count);
+            setLoading(false);
         } catch (error) {
             console.error(error)
         }
-        setLoading(false);
     };
 
     useEffect(() => {
