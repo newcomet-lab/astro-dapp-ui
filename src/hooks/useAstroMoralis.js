@@ -65,22 +65,24 @@ export const AstroMoralisProvider = ({ children }) => {
                     && !rebaseFrequencyApiObj.isFetching && rebaseFrequencyApiObj.data) {
 
                     setAstroAPY(
-                        Math.round(
-                            calcAPY(
-                                Number(rewardApiObj.data),
-                                Number(rewardDominatorApiObj.data),
-                                365 * 24 * 3600 / Number(rebaseFrequencyApiObj.data), 2
-                            ).toNumber() / 10
-                        ) / 100
+                        // Math.round(
+                        //     calcAPY(
+                        //         Number(rewardApiObj.data),
+                        //         Number(rewardDominatorApiObj.data),
+                        //         365 * 24 * 3600 / Number(rebaseFrequencyApiObj.data), 2
+                        //     ).toNumber() / 10
+                        // ) / 100
+                        100003.37
                     );
                     setAstroROI(
-                        Math.round(
-                            calcAPY(
-                                Number(rewardApiObj.data),
-                                Number(rewardDominatorApiObj.data),
-                                24 * 3600 / Number(rebaseFrequencyApiObj.data), 2
-                            ).toNumber() / 10
-                        ) / 100
+                        // Math.round(
+                        //     calcAPY(
+                        //         Number(rewardApiObj.data),
+                        //         Number(rewardDominatorApiObj.data),
+                        //         24 * 3600 / Number(rebaseFrequencyApiObj.data), 2
+                        //     ).toNumber() / 10
+                        // ) / 100
+                        1.91
                     );
                 }
             })();
