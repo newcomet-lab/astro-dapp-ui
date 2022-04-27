@@ -397,7 +397,7 @@ export default function SwapForAstro() {
                                         cursor: 'pointer'
                                     }}>Balance: 0</Typography>
                                 </Grid>
-                                <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <Typography sx={{
                                         fontFamily: 'Poppins',
                                         fontSize: '18px',
