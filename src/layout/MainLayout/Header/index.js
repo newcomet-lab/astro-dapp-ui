@@ -14,7 +14,7 @@ import { useMoralis } from "react-moralis";
 import { registerToken } from 'utils/networks';
 import METAMAST_IMAGE from "assets/images/wallets/metamaskWallet.png";
 import ASTRO_IMAGE from "assets/images/astro/astro-icon.png";
-import { astroTokenAddress } from '_common/address';
+import { astroTokenAddress } from '_common/token-constants';
 
 const Header = ({ handleLeftDrawerToggle, leftDrawerOpened }) => {
     const theme = useTheme();
