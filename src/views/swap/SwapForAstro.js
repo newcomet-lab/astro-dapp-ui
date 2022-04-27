@@ -25,7 +25,8 @@ import astroIcon from 'assets/images/astro/astro-icon.png';
 const regexFloat = /^\d+(\.\d{0,9})?$|^$/;
 
 export default function SwapForAstro() {
-    const [selectedToken, setSelectedToken] = React.useState(0);
+    const [selectedToken, setSelectedToken] = React.useState(0); // 0: AVAX, 1: USDC
+    const [selectedAstroToken, setSelectedAstroToken] = React.useState(0); // 0: ASTRO
     const [isOpenSlippage, setOpenSlippage] = React.useState(false);
     const [isAvaxToAstro, setAvaxToAstro] = React.useState(true);
     const [slipable, setSlipable] = React.useState(0.1);
@@ -33,6 +34,10 @@ export default function SwapForAstro() {
 
     const handleSelectToken = (event) => {
         setSelectedToken(event.target.value)
+    }
+
+    const handleSelectAstroToken = (event) => {
+        setSelectedAstroToken(event.target.value);
     }
 
     const handleOpenSlippageSetting = () => {
@@ -116,8 +121,8 @@ export default function SwapForAstro() {
         <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={selectedToken}
-            onChange={handleSelectToken}
+            value={selectedAstroToken}
+            onChange={handleSelectAstroToken}
             sx={{
                 '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: '#686085',
