@@ -67,7 +67,6 @@ function Account() {
                                             console.error(e);
                                         }
                                     }}
-                                    fullWidth={true}
                                     sx={{
                                         paddingY: '20px',
                                         width: 1,
