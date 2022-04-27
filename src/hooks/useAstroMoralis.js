@@ -28,9 +28,9 @@ export const AstroMoralisProvider = ({ children }) => {
     const rebaseFrequencyApiObj = useApiContract(rebaseFrequencyApiOpt);
 
     const Web3Api = useMoralisWeb3Api();
-    const { fetch, data, error, isLoading } = useMoralisWeb3ApiCall(
-        Web3Api.account.getTokenBalances
-    );
+    // const { fetch, data, error, isLoading } = useMoralisWeb3ApiCall(
+    //     Web3Api.account.getTokenBalances, {chain: 'avalanche', address:astroTokenAddress}
+    // );
 
     const loadAPYAndROI = async () => {
         try {
@@ -43,14 +43,13 @@ export const AstroMoralisProvider = ({ children }) => {
         }
     }
 
-    const fetchBalance = () => {
-        fetch();
-    
-        if (data) {
-            console.log("data>>>>>>>>>>>>>>>>>>", data);
-        } else if (error) {
-            console.log("error>>>>>>>>>>>>>>>>>>",error);
-        }
+    const fetchBalance = async () => {
+        let balance = await Web3Api.account.getTokenBalances({
+            chain: "avalanche",
+        });
+
+        console.log("data>>>>>>>>>>>>>>>>>>");
+        console.log(balance);
     };
 
     useEffect(() => {
