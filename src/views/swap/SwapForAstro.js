@@ -12,11 +12,13 @@ import {
     TextField
 } from '@mui/material';
 import useAstroMoralis from 'hooks/useAstroMoralis';
+import { registerToken } from 'utils/networks';
 
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
 import { IconArrowsUpDown, IconSettings } from '@tabler/icons';
+import { astroTokenAddress } from '_common/token-constants';
 
 import metamaskIcon from 'assets/images/astro/metamask.png';
 import avaxIcon from 'assets/images/astro/avax.png';
@@ -522,7 +524,15 @@ export default function SwapForAstro() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 marginTop: '1rem',
-                            }}>
+                                cursor: 'pointer',
+                            }}
+                                onClick={() => registerToken(
+                                    astroTokenAddress,
+                                    'ASTRO',
+                                    '18',
+                                    astroIcon,
+                                )}
+                            >
                                 <img src={metamaskIcon} style={{ width: '30px', height: '30px' }} />
                                 <Typography sx={{
                                     fontSize: '14px',
