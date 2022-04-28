@@ -8,11 +8,37 @@ import {
     Slider
 } from '@mui/material';
 
+import useAstroMoralis from 'hooks/useAstroMoralis';
+import useDataService from 'hooks/useDataService';
+
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
+import { SettingsInputHdmiTwoTone } from '@mui/icons-material';
+
+const regexFloat = /^\d+(\.\d{0,9})?$|^$/;
 
 export default function WhatToDo() {
+    const [{ accountTokenBalance, rewardYield }] = useAstroMoralis();
+    const [{ astroPrice }] = useDataService();
+
+    const [iptRewardYield, setIptRewardYield] = React.useState(0);
     const [dayCounter, setDayCounter] = React.useState(30);
+    const [astroAmount, setAstroAmount] = React.useState(0);
+    const [apyPercent, setApyPercent] = React.useState(100003.37);
+    const [oldAstroPrice, setOldAstroPrice] = React.useState(0);
+    const [newAstroPrice, setNewAstroPrice] = React.useState(0);
+
+    React.useEffect(() => {
+        if (rewardYield) setIptRewardYield(rewardYield)
+    }, [rewardYield]);
+
+    const handleChangeTextField = (event, index) => {
+        if (!regexFloat.test(event.target.value)) return;
+        if (index == 0) setAstroAmount(event.target.value);
+        if (index == 1) setApyPercent(event.target.value);
+        if (index == 2) setOldAstroPrice(event.target.value);
+        if (index == 3) setNewAstroPrice(event.target.value);
+    }
 
     return (
         <MainCard title="WHAT TO DO">
@@ -126,9 +152,13 @@ export default function WhatToDo() {
                                                     backgroundColor: 'transparent',
                                                     color: 'gray'
                                                 }
-                                            }}>MAX</Button>
+                                            }}
+                                                onClick={() => setAstroAmount(accountTokenBalance)}
+                                            >MAX</Button>
                                         ),
                                     }}
+                                    value={astroAmount}
+                                    onChange={(e) => handleChangeTextField(e, 0)}
                                 />
                             </Grid>
                         </Grid>
@@ -180,8 +210,15 @@ export default function WhatToDo() {
                                                 backgroundColor: 'transparent',
                                                 color: 'gray'
                                             }
-                                        }}>Current</Button>
+                                        }}
+                                            onClick={() => setApyPercent(100003.37)}
+                                        >Current</Button>
                                     ),
+                                }}
+                                value={apyPercent}
+                                onChange={(e) => {
+                                    handleChangeTextField(e, 1);
+                                    setIptRewardYield(Math.pow(apyPercent, 1 / 365 / 48) - 1);
                                 }}
                             />
                         </Grid>
@@ -233,9 +270,13 @@ export default function WhatToDo() {
                                                 backgroundColor: 'transparent',
                                                 color: 'gray'
                                             }
-                                        }}>Current</Button>
+                                        }}
+                                            onClick={() => setOldAstroPrice(astroPrice)}
+                                        >Current</Button>
                                     ),
                                 }}
+                                value={oldAstroPrice}
+                                onChange={(e) => handleChangeTextField(e, 2)}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
@@ -286,9 +327,13 @@ export default function WhatToDo() {
                                                 backgroundColor: 'transparent',
                                                 color: 'gray'
                                             }
-                                        }}>Current</Button>
+                                        }}
+                                            onClick={() => setNewAstroPrice(astroPrice)}
+                                        >Current</Button>
                                     ),
                                 }}
+                                value={newAstroPrice}
+                                onChange={(e) => handleChangeTextField(e, 3)}
                             />
                         </Grid>
                     </Grid>
@@ -335,7 +380,7 @@ export default function WhatToDo() {
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
-                            }}>$0</Typography>
+                            }}>${astroAmount * oldAstroPrice}</Typography>
                         </Grid>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography sx={{
@@ -346,7 +391,7 @@ export default function WhatToDo() {
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
-                            }}>$0</Typography>
+                            }}>${astroAmount * astroPrice}</Typography>
                         </Grid>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography sx={{
@@ -357,7 +402,7 @@ export default function WhatToDo() {
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
-                            }}>$0</Typography>
+                            }}>{Math.pow(1 + iptRewardYield, dayCounter * 48) * astroAmount} ASTRO</Typography>
                         </Grid>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography sx={{
@@ -368,7 +413,7 @@ export default function WhatToDo() {
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
-                            }}>$0</Typography>
+                            }}>${Math.pow(1 + iptRewardYield, dayCounter * 48) * astroAmount* newAstroPrice}</Typography>
                         </Grid>
                         <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography sx={{
@@ -379,7 +424,7 @@ export default function WhatToDo() {
                             <Typography sx={{
                                 fontSize: '16px',
                                 fontFamily: 'Poppins',
-                            }}>$0</Typography>
+                            }}>0</Typography>
                         </Grid>
                     </Grid>
                 </Grid>

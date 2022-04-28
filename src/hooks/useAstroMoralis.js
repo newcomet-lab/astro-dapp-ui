@@ -17,13 +17,27 @@ const rebaseFrequencyApiOpt = { ...commonAstroApiObj, functionName: "rebaseFrequ
 const accountTokenBalanceApiOpt = { ...commonAstroApiObj, functionName: "balanceOf" };
 
 export default function useAstroMoralis() {
-    const [{ astroAPY, astroROI, accountTokenBalance, accountAvaxBalance, accountUsdcBalance }] = useContext(AstroMoralisContext);
-    return [{ astroAPY, astroROI, accountTokenBalance, accountAvaxBalance, accountUsdcBalance }]
+    const [{ astroAPY,
+        astroROI,
+        accountTokenBalance,
+        accountAvaxBalance,
+        accountUsdcBalance,
+        rewardYield
+    }] = useContext(AstroMoralisContext);
+    return [{
+        astroAPY,
+        astroROI,
+        accountTokenBalance,
+        accountAvaxBalance,
+        accountUsdcBalance,
+        rewardYield
+    }]
 }
 
 export const AstroMoralisProvider = ({ children }) => {
     const [astroAPY, setAstroAPY] = useState(null);
     const [astroROI, setAstroROI] = useState(null);
+    const [rewardYield, setrewardYield] = useState(null);
     const [accountTokenBalance, setAccountTokenBalance] = useState(null);
     const [accountAvaxBalance, setAccountAvaxBalance] = useState(null);
     const [accountUsdcBalance, setAccountUsdcBalance] = useState(null);
@@ -95,6 +109,7 @@ export const AstroMoralisProvider = ({ children }) => {
                         // ) / 100
                         1.91
                     );
+                    setrewardYield(Number(rewardApiObj.data) / Number(rewardDominatorApiObj.data));
                 }
             })();
         }
@@ -173,7 +188,14 @@ export const AstroMoralisProvider = ({ children }) => {
     }, [isWeb3Enabled, account, isAuthenticated]);
 
     return <AstroMoralisContext.Provider
-        value={[{ astroAPY, astroROI, accountTokenBalance, accountAvaxBalance, accountUsdcBalance }]}>
+        value={[{
+            astroAPY,
+            astroROI,
+            accountTokenBalance,
+            accountAvaxBalance,
+            accountUsdcBalance,
+            rewardYield
+        }]}>
         {children}
     </AstroMoralisContext.Provider>
 }

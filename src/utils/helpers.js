@@ -6,11 +6,14 @@ export const calcAPY = (b1, b2, b3, dec) => {
     if (!b3) b3 = 48;
     if (!dec) dec = 2;
 
-    const b4 = new BN(b2 + b1);
-    const b5 = new BN(b2);
-    const b6 = new BN(b3);
+    return Math.pow(1 + b1 / b2, b3)
 
-    return b4.pow(b6).mul(new BN(Math.pow(10, dec + 3))).div(b5.pow(b6)).sub(new BN(Math.pow(10, dec + 3)));
+    // const b4 = new BN(b2 + b1);
+    // const b5 = new BN(b2);
+    // const b6 = new BN(b3);
+
+    // return b4.pow(b6).mul(new BN(Math.pow(10, dec + 3))).div(b5.pow(b6)).sub(new BN(Math.pow(10, dec + 3)));
+    
 }
 
 export function formatFloatFixed(val, dec) {
