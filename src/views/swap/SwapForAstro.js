@@ -11,6 +11,7 @@ import {
     Modal,
     TextField
 } from '@mui/material';
+import useAstroMoralis from 'hooks/useAstroMoralis';
 
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
@@ -21,16 +22,26 @@ import metamaskIcon from 'assets/images/astro/metamask.png';
 import avaxIcon from 'assets/images/astro/avax.png';
 import usdcIcon from 'assets/images/astro/usdc.png';
 import astroIcon from 'assets/images/astro/astro-icon.png';
+import { numberWithCommas } from 'utils/helpers';
 
 const regexFloat = /^\d+(\.\d{0,9})?$|^$/;
 
 export default function SwapForAstro() {
+    const [{ accountTokenBalance, accountAvaxBalance, accountUsdcBalance }] = useAstroMoralis();
+
     const [selectedToken, setSelectedToken] = React.useState(0); // 0: AVAX, 1: USDC
     const [selectedAstroToken, setSelectedAstroToken] = React.useState(0); // 0: ASTRO
     const [isOpenSlippage, setOpenSlippage] = React.useState(false);
     const [isAvaxToAstro, setAvaxToAstro] = React.useState(true);
     const [slipable, setSlipable] = React.useState(0.1);
     const [customSlipable, setCustomSlipable] = React.useState('');
+    const [fromBalance, setFromBalance] = React.useState(0);
+    const [toBalance, setToBalance] = React.useState(0);
+
+
+    // console.log('accountTokenBalance:', accountTokenBalance);
+    // console.log('accountAvaxBalance:', accountAvaxBalance);
+    // console.log('accountUsdcBalance:', accountUsdcBalance);
 
     const handleSelectToken = (event) => {
         setSelectedToken(event.target.value)
@@ -57,14 +68,28 @@ export default function SwapForAstro() {
     }
 
     const handleCustomSlipPercent = (event) => {
-        console.log("================>", !regexFloat.test(event.target.value));
         if (!regexFloat.test(event.target.value)) {
             return;
         } else {
             setCustomSlipable(event.target.value);
             setSlipable(event.target.value);
         }
+    }
 
+    const handleCustomBalance = (event, index) => {
+        if (!regexFloat.test(event.target.value)) {
+            return;
+        } else {
+            index == 0 ? setFromBalance(event.target.value) : setToBalance(event.target.value);
+        }
+    }
+
+    const handleSelectCustomFromBalance = (percent) => {
+        isAvaxToAstro
+            ? selectedToken == 0
+                ? setFromBalance(accountAvaxBalance / 100 * percent)
+                : setFromBalance(accountUsdcBalance / 100 * percent)
+            : setFromBalance(accountTokenBalance / 100 * percent)
     }
 
     const AvaxFormControl = <FormControl>
@@ -172,6 +197,21 @@ export default function SwapForAstro() {
             }}
             onClick={() => handleSlipPercent(percent)}
         >{percent === 'AUTO' ? 'AUTO' : `${percent}%`}</ButtonBase>
+    }
+
+    const AmountButton = (percent) => {
+        return <ButtonBase variant="contained" sx={{
+            cursor: 'pointer',
+            marginRight: '6px',
+            padding: '8px',
+            borderRadius: '10px',
+            color: 'rgb(255, 184, 77)',
+            '&:hover': {
+                background: 'rgb(76, 52, 134)',
+            }
+        }}
+            onClick={() => handleSelectCustomFromBalance(percent)}
+        >{percent == 100 ? 'MAX' : `${percent}%`}</ButtonBase>
     }
 
     return (
@@ -298,7 +338,7 @@ export default function SwapForAstro() {
                             </Grid>
                             <Grid sx={{
                                 display: 'flex',
-                                backgroundColor: 'rgba(21, 27, 52, 0.3)',
+                                backgroundColor: '#10123e',
                                 border: '1px solid rgb(89, 71, 255)',
                                 borderRadius: '20px',
                                 flexDirection: 'column',
@@ -318,48 +358,43 @@ export default function SwapForAstro() {
                                         fontSize: '18px',
                                         fontWeight: '400',
                                         cursor: 'pointer'
-                                    }}>Balance: 0</Typography>
+                                    }}>Balance:{accountAvaxBalance && accountUsdcBalance && accountTokenBalance
+                                        ? isAvaxToAstro
+                                            ? selectedToken == 0
+                                                ? numberWithCommas(accountAvaxBalance.toFixed(3))
+                                                : numberWithCommas(accountUsdcBalance.toFixed(3))
+                                            : numberWithCommas(accountTokenBalance.toFixed(3))
+                                        : 0}
+                                    </Typography>
                                 </Grid>
                                 <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Typography sx={{
-                                        fontFamily: 'Poppins',
-                                        fontSize: '18px',
-                                        fontWeight: '400',
-                                    }}>0</Typography>
+                                    <TextField
+                                        sx={{
+                                            width: '90%',
+                                            background: 'transparent',
+                                            outline: 'none',
+                                            '& .MuiOutlinedInput-input.MuiInputBase-input': {
+                                                background: '#10123e !important',
+                                                padding: '0px 1px',
+                                                fontSize: '22px',
+                                                fontFamily: 'CenturyGothicB',
+                                                whiteSpace: 'nowrap',
+                                                textOverflow: 'ellipsis',
+                                            },
+                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#10123e !important',
+                                            }
+                                        }}
+                                        value={fromBalance}
+                                        onChange={(e) => handleCustomBalance(e, 0)} />
                                     <Grid sx={{ display: 'flex', alignItems: 'center' }}>
                                         {isAvaxToAstro
-                                            ? <ButtonBase variant="contained" sx={{
-                                                cursor: 'pointer',
-                                                marginRight: '6px',
-                                                padding: '8px',
-                                                borderRadius: '10px',
-                                                color: 'rgb(255, 184, 77)',
-                                                '&:hover': {
-                                                    background: 'rgb(76, 52, 134)',
-                                                }
-                                            }}>MAX</ButtonBase>
+                                            ? AmountButton(100)
                                             : <>
-                                                <ButtonBase variant="contained" sx={{
-                                                    cursor: 'pointer',
-                                                    marginRight: '6px',
-                                                    padding: '8px',
-                                                    borderRadius: '10px',
-                                                    color: 'rgb(255, 184, 77)',
-                                                    '&:hover': {
-                                                        background: 'rgb(76, 52, 134)',
-                                                    }
-                                                }}>20%</ButtonBase>
-                                                <ButtonBase variant="contained" sx={{
-                                                    cursor: 'pointer',
-                                                    marginRight: '6px',
-                                                    padding: '8px',
-                                                    borderRadius: '10px',
-                                                    color: 'rgb(255, 184, 77)',
-                                                    '&:hover': {
-                                                        background: 'rgb(76, 52, 134)',
-                                                    }
-                                                }}>50%</ButtonBase>
-                                            </>}
+                                                {AmountButton(20)}
+                                                {AmountButton(50)}
+                                            </>
+                                        }
                                         {isAvaxToAstro ? AvaxFormControl : AstroFormControl}
                                     </Grid>
                                 </Grid>
@@ -380,7 +415,7 @@ export default function SwapForAstro() {
                             </ButtonBase>
                             <Grid sx={{
                                 display: 'flex',
-                                backgroundColor: 'rgba(21, 27, 52, 0.3)',
+                                backgroundColor: '#10123e',
                                 border: '1px solid rgb(89, 71, 255)',
                                 borderRadius: '20px',
                                 flexDirection: 'column',
@@ -400,14 +435,36 @@ export default function SwapForAstro() {
                                         fontSize: '18px',
                                         fontWeight: '400',
                                         cursor: 'pointer'
-                                    }}>Balance: 0</Typography>
+
+                                    }}>Balance:{accountAvaxBalance && accountUsdcBalance && accountTokenBalance
+                                        ? !isAvaxToAstro
+                                            ? selectedToken == 0
+                                                ? numberWithCommas(accountAvaxBalance.toFixed(3))
+                                                : numberWithCommas(accountUsdcBalance.toFixed(3))
+                                            : numberWithCommas(accountTokenBalance.toFixed(3))
+                                        : 0}
+                                    </Typography>
                                 </Grid>
                                 <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Typography sx={{
-                                        fontFamily: 'Poppins',
-                                        fontSize: '18px',
-                                        fontWeight: '400',
-                                    }}>0</Typography>
+                                    <TextField
+                                        sx={{
+                                            width: '90%',
+                                            background: 'transparent',
+                                            outline: 'none',
+                                            '& .MuiOutlinedInput-input.MuiInputBase-input': {
+                                                background: '#10123e !important',
+                                                padding: '0px 1px',
+                                                fontSize: '22px',
+                                                fontFamily: 'CenturyGothicB',
+                                                whiteSpace: 'nowrap',
+                                                textOverflow: 'ellipsis',
+                                            },
+                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#10123e !important',
+                                            }
+                                        }}
+                                        value={toBalance}
+                                        onChange={(e) => handleCustomBalance(e, 1)} />
                                     <Grid sx={{ display: 'flex', alignItems: 'center' }}>
                                         {!isAvaxToAstro ? AvaxFormControl : AstroFormControl}
                                     </Grid>

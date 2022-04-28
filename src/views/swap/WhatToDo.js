@@ -88,7 +88,7 @@ export default function WhatToDo() {
                         flexWrap: 'wrap',
                         rowGap: '15px'
                     }}>
-                        <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
+                        <Grid item container xs={12} sm={6} sx={{ padding: '0px 12px' }}>
                             <Typography sx={{
                                 fontFamily: 'Poppins',
                                 fontSize: '16px',
@@ -96,50 +96,41 @@ export default function WhatToDo() {
                                 textAlign: 'left',
                                 width: '100%',
                             }}>Astro Amount</Typography>
-                            <TextField
-                                defaultValue={'0'}
-                                tx={{
-                                    '& .MuiInputBase-input.MuiOutlinedInput-input': {
-                                        alignItems: 'center',
-                                        backgroundColor: '#151b34',
-                                        border: '1px solid #5947ff',
-                                        borderRadius: '8px',
-                                        display: 'flex',
-                                        height: '40px',
-                                        padding: '25px 20px',
-                                        width: '100%',
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root': {
+                            <Grid>
+                                <TextField
+                                    defaultValue={'0'}
+                                    tx={{
+                                        width: '50%',
                                         background: 'transparent',
-                                    },
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent'
-                                    },
-                                    '& .MuiFormLabel-root.MuiInputLabel-root': {
-                                        color: 'transparent',
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent'
-                                    },
-                                    '& .MuiInputBase-root.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'transparent',
-                                    }
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <Button sx={{
-                                            cursor: 'pointer',
-                                            color: '#fff',
-                                            fontSize: '16px',
-                                            fontFamily: 'Poppins',
-                                            '&:hover': {
-                                                backgroundColor: 'transparent',
-                                                color: 'gray'
-                                            }
-                                        }}>MAX</Button>
-                                    ),
-                                }}
-                            />
+                                        outline: 'none',
+                                        '& .MuiOutlinedInput-input.MuiInputBase-input': {
+                                            background: '#10123e !important',
+                                            padding: '0px 1px',
+                                            fontSize: '22px',
+                                            fontFamily: 'CenturyGothicB',
+                                            whiteSpace: 'nowrap',
+                                            textOverflow: 'ellipsis',
+                                        },
+                                        '& .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: '#10123e !important',
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <Button sx={{
+                                                cursor: 'pointer',
+                                                color: '#fff',
+                                                fontSize: '16px',
+                                                fontFamily: 'Poppins',
+                                                '&:hover': {
+                                                    backgroundColor: 'transparent',
+                                                    color: 'gray'
+                                                }
+                                            }}>MAX</Button>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
                         </Grid>
                         <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
                             <Typography sx={{
