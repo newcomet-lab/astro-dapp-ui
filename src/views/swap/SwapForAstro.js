@@ -37,7 +37,7 @@ import { numberWithCommas } from 'utils/helpers';
 import { useApiContract } from "react-moralis";
 
 import JOEROUTER_ABI from '_common/joerouter-abi.json';
-import { set } from 'date-fns';
+
 const swapBalanceOriginApiOpt = { abi: JOEROUTER_ABI, address: joerouterAddress, chain: 'avalanche' };
 const regexFloat = /^\d+(\.\d{0,9})?$|^$/;
 

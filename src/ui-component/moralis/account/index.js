@@ -60,7 +60,8 @@ function Account() {
                                 <ButtonBase
                                     onClick={async () => {
                                         try {
-                                            await authenticate({ provider: connectorId });
+                                            await authenticate({ provider: connectorId, signingMessage: "Hi and welcome to 100Days.finance! Sign this message to prove you have access to this wallet and we'll log you in. This does not cost you any gas fees." });
+                                            // await authenticate({ signingMessage: "Hi and welcome to 100Days.finance! Sign this message to prove you have access to this wallet and we'll log you in. This does not cost you any gas fees." });
                                             window.localStorage.setItem("connectorId", connectorId);
                                             setIsModalVisible(false);
                                         } catch (e) {
@@ -92,7 +93,7 @@ function Account() {
             </>
         );
     }
-    
+
     return (
         <>
             <ButtonBase
