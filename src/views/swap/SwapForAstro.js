@@ -18,7 +18,15 @@ import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
 import { IconArrowsUpDown, IconSettings } from '@tabler/icons';
-import { astroTokenAddress } from '_common/token-constants';
+import {
+    astroTokenAddress,
+    joerouterAddress,
+    wavaxTokenAddress,
+    usdcTokenAddress,
+    astroTokenDecimals,
+    wavaxTokenDecimals,
+    usdcTokenDecimals
+} from '_common/token-constants';
 
 import metamaskIcon from 'assets/images/astro/metamask.png';
 import avaxIcon from 'assets/images/astro/avax.png';
@@ -26,6 +34,11 @@ import usdcIcon from 'assets/images/astro/usdc.png';
 import astroIcon from 'assets/images/astro/astro-icon.png';
 import { numberWithCommas } from 'utils/helpers';
 
+import { useApiContract } from "react-moralis";
+
+import JOEROUTER_ABI from '_common/joerouter-abi.json';
+import { set } from 'date-fns';
+const swapBalanceOriginApiOpt = { abi: JOEROUTER_ABI, address: joerouterAddress, chain: 'avalanche' };
 const regexFloat = /^\d+(\.\d{0,9})?$|^$/;
 
 export default function SwapForAstro() {
@@ -39,6 +52,12 @@ export default function SwapForAstro() {
     const [customSlipable, setCustomSlipable] = React.useState('');
     const [fromBalance, setFromBalance] = React.useState(0);
     const [toBalance, setToBalance] = React.useState(0);
+    const [arrAddress, setArrAddress] = React.useState([wavaxTokenAddress, astroTokenAddress]);
+    const [isChangeFromBalance, setChangeFromBalance] = React.useState(false);
+    const [isChangeToBalance, setChangeToBalance] = React.useState(false);
+
+    const getToSwapBalanceApiObj = useApiContract({ ...swapBalanceOriginApiOpt, functionName: 'getAmountsOut', params: { amountIn: `${fromBalance}`, path: arrAddress } });
+    const getFromSwapBalanceApiObj = useApiContract({ ...swapBalanceOriginApiOpt, functionName: 'getAmountsIn', params: { amountOut: `${toBalance}`, path: arrAddress } });
 
     const handleSelectToken = (event) => {
         setSelectedToken(event.target.value)
@@ -73,20 +92,88 @@ export default function SwapForAstro() {
         }
     }
 
+    const getDecimals = () => {
+        let fromDecimals = 0;
+        let toDecimals = 0;
+        if (isAvaxToAstro) {
+            fromDecimals = selectedToken == 0 ? wavaxTokenDecimals : usdcTokenDecimals;
+            toDecimals = astroTokenDecimals;
+        } else {
+            fromDecimals = astroTokenDecimals;
+            toDecimals = selectedToken == 0 ? wavaxTokenDecimals : usdcTokenDecimals;
+        }
+        return { fromDecimals, toDecimals };
+    }
+
     const handleCustomBalance = (event, index) => {
         if (!regexFloat.test(event.target.value)) {
             return;
         } else {
-            index === 0 ? setFromBalance(event.target.value) : setToBalance(event.target.value);
+            if (index === 0) {
+                setFromBalance(event.target.value * Math.pow(10, getDecimals().fromDecimals));
+                setChangeFromBalance(true);
+            } else {
+                setToBalance(event.target.value * Math.pow(10, getDecimals().fromDecimals));
+                setChangeToBalance(true);
+            }
         }
     }
+    React.useEffect(() => {
+        isAvaxToAstro
+            ? selectedToken === 0
+                ? setArrAddress([wavaxTokenAddress, astroTokenAddress])
+                : setArrAddress([usdcTokenAddress, wavaxTokenAddress, astroTokenAddress])
+            : selectedToken === 0
+                ? setArrAddress([astroTokenAddress, wavaxTokenAddress])
+                : setArrAddress([astroTokenAddress, wavaxTokenAddress, usdcTokenAddress])
+    }, [isAvaxToAstro, selectedToken]);
+
+    React.useEffect(() => {
+        isChangeFromBalance && loadToSwapBalance();
+    }, [fromBalance]);
+
+    React.useEffect(() => {
+        isChangeToBalance && loadFromSwapBalance();
+    }, [toBalance]);
 
     const handleSelectCustomFromBalance = (percent) => {
         isAvaxToAstro
             ? selectedToken === 0
-                ? setFromBalance(accountAvaxBalance / 100 * percent)
-                : setFromBalance(accountUsdcBalance / 100 * percent)
-            : setFromBalance(accountTokenBalance / 100 * percent)
+                ? setFromBalance(accountAvaxBalance / 100 * percent * Math.pow(10, getDecimals().fromDecimals))
+                : setFromBalance(accountUsdcBalance / 100 * percent * Math.pow(10, getDecimals().fromDecimals))
+            : setFromBalance(accountTokenBalance / 100 * percent * Math.pow(10, getDecimals().fromDecimals))
+    }
+
+    const loadToSwapBalance = () => {
+        try {
+            getToSwapBalanceApiObj.runContractFunction()
+                .then(data => {
+                    data === undefined ? setToBalance(0) : setToBalance(data[data.length - 1]);
+                    setChangeFromBalance(false);
+                    console.log(fromBalance);
+                    console.log(arrAddress);
+                    console.log(data);
+                })
+                .catch(e => console.log(e));
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    const loadFromSwapBalance = () => {
+        try {
+            getFromSwapBalanceApiObj.runContractFunction()
+                .then(data => {
+                    data === undefined ? setFromBalance(0) : setFromBalance(data[0]);
+                    console.log(toBalance);
+                    console.log(arrAddress);
+                    console.log(data);
+                    setChangeToBalance(false);
+                })
+                .catch(e => console.log(e));
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     const AvaxFormControl = <FormControl>
@@ -382,7 +469,7 @@ export default function SwapForAstro() {
                                                 borderColor: '#10123e !important',
                                             }
                                         }}
-                                        value={fromBalance}
+                                        value={fromBalance / Math.pow(10, getDecimals().fromDecimals)}
                                         onChange={(e) => handleCustomBalance(e, 0)} />
                                     <Grid sx={{ display: 'flex', alignItems: 'center' }}>
                                         {isAvaxToAstro
@@ -460,7 +547,7 @@ export default function SwapForAstro() {
                                                 borderColor: '#10123e !important',
                                             }
                                         }}
-                                        value={toBalance}
+                                        value={toBalance / Math.pow(10, getDecimals().toDecimals)}
                                         onChange={(e) => handleCustomBalance(e, 1)} />
                                     <Grid sx={{ display: 'flex', alignItems: 'center' }}>
                                         {!isAvaxToAstro ? AvaxFormControl : AstroFormControl}

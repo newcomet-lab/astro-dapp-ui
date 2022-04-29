@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useApiContract, useMoralis, useNativeBalance, useERC20Balances } from "react-moralis";
 
 import ASTRO_ABI from '_common/astro-abi.json';
-import { astroTokenAddress, astroTokenDecimals, usdcTokenAddress } from '_common/token-constants';
+import { astroTokenAddress, usdcTokenAddress } from '_common/token-constants';
 
 import { calcAPY, getNumberFromBN } from 'utils/helpers';
 
@@ -41,7 +41,7 @@ export const AstroMoralisProvider = ({ children }) => {
     const [accountTokenBalance, setAccountTokenBalance] = useState(null);
     const [accountAvaxBalance, setAccountAvaxBalance] = useState(null);
     const [accountUsdcBalance, setAccountUsdcBalance] = useState(null);
-
+    
     const { isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading, account } = useMoralis();
 
     const rewardApiObj = useApiContract(rewardApiOpt);
@@ -60,22 +60,6 @@ export const AstroMoralisProvider = ({ children }) => {
             rewardApiObj.runContractFunction();
             rewardDominatorApiObj.runContractFunction();
             rebaseFrequencyApiObj.runContractFunction();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    const loadAccountTokenBalance = () => {
-        try {
-            accountTokenBalanceApiObj.runContractFunction();
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    const loadAvaxTokenBalance = () => {
-        try {
-            setAccountAvaxBalance(getNumberFromBN(balance.balance, 18));
         } catch (e) {
             console.log(e);
         }
@@ -171,17 +155,10 @@ export const AstroMoralisProvider = ({ children }) => {
         let isUpdated = true;
         if (isUpdated) {
             (async () => {
-                if (isWeb3Enabled && account && isAuthenticated) loadAvaxTokenBalance();
-            })();
-        }
-        return () => { isUpdated = false; };
-    }, [isWeb3Enabled, account, isAuthenticated]);
-
-    useEffect(() => {
-        let isUpdated = true;
-        if (isUpdated) {
-            (async () => {
-                if (isWeb3Enabled && account && isAuthenticated) fetchERC20Balances({ params: { chain: "avalanche" } });
+                if (isWeb3Enabled && account && isAuthenticated) {
+                    setAccountAvaxBalance(balance.balance / Math.pow(10, 18));
+                    fetchERC20Balances({ params: { chain: "avalanche" } });
+                }
             })();
         }
         return () => { isUpdated = false; };
