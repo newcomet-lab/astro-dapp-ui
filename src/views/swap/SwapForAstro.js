@@ -40,11 +40,6 @@ export default function SwapForAstro() {
     const [fromBalance, setFromBalance] = React.useState(0);
     const [toBalance, setToBalance] = React.useState(0);
 
-
-    // console.log('accountTokenBalance:', accountTokenBalance);
-    // console.log('accountAvaxBalance:', accountAvaxBalance);
-    // console.log('accountUsdcBalance:', accountUsdcBalance);
-
     const handleSelectToken = (event) => {
         setSelectedToken(event.target.value)
     }
@@ -82,13 +77,13 @@ export default function SwapForAstro() {
         if (!regexFloat.test(event.target.value)) {
             return;
         } else {
-            index == 0 ? setFromBalance(event.target.value) : setToBalance(event.target.value);
+            index === 0 ? setFromBalance(event.target.value) : setToBalance(event.target.value);
         }
     }
 
     const handleSelectCustomFromBalance = (percent) => {
         isAvaxToAstro
-            ? selectedToken == 0
+            ? selectedToken === 0
                 ? setFromBalance(accountAvaxBalance / 100 * percent)
                 : setFromBalance(accountUsdcBalance / 100 * percent)
             : setFromBalance(accountTokenBalance / 100 * percent)
@@ -213,7 +208,7 @@ export default function SwapForAstro() {
             }
         }}
             onClick={() => handleSelectCustomFromBalance(percent)}
-        >{percent == 100 ? 'MAX' : `${percent}%`}</ButtonBase>
+        >{percent === 100 ? 'MAX' : `${percent}%`}</ButtonBase>
     }
 
     return (
@@ -362,7 +357,7 @@ export default function SwapForAstro() {
                                         cursor: 'pointer'
                                     }}>Balance:{accountAvaxBalance && accountUsdcBalance && accountTokenBalance
                                         ? isAvaxToAstro
-                                            ? selectedToken == 0
+                                            ? selectedToken === 0
                                                 ? numberWithCommas(accountAvaxBalance.toFixed(3))
                                                 : numberWithCommas(accountUsdcBalance.toFixed(3))
                                             : numberWithCommas(accountTokenBalance.toFixed(3))
@@ -440,7 +435,7 @@ export default function SwapForAstro() {
 
                                     }}>Balance:{accountAvaxBalance && accountUsdcBalance && accountTokenBalance
                                         ? !isAvaxToAstro
-                                            ? selectedToken == 0
+                                            ? selectedToken === 0
                                                 ? numberWithCommas(accountAvaxBalance.toFixed(3))
                                                 : numberWithCommas(accountUsdcBalance.toFixed(3))
                                             : numberWithCommas(accountTokenBalance.toFixed(3))

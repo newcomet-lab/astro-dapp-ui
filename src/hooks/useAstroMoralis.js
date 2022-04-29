@@ -137,8 +137,8 @@ export const AstroMoralisProvider = ({ children }) => {
         if (isUpdated) {
             (async () => {
                 if (isWeb3Enabled && account && isAuthenticated && !isFetching && data) {
-                    let usdc = data.find(token => token.token_address == usdcTokenAddress.toLowerCase());
-                    let astro = data.find(token => token.token_address == astroTokenAddress.toLowerCase());
+                    let usdc = data.find(token => token.token_address === usdcTokenAddress.toLowerCase());
+                    let astro = data.find(token => token.token_address === astroTokenAddress.toLowerCase());
                     setAccountTokenBalance(getNumberFromBN(astro.balance, astro.decimals));
                     setAccountUsdcBalance(getNumberFromBN(usdc.balance, usdc.decimals));
                 }

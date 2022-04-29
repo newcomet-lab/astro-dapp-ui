@@ -34,10 +34,10 @@ export default function WhatToDo() {
 
     const handleChangeTextField = (event, index) => {
         if (!regexFloat.test(event.target.value)) return;
-        if (index == 0) setAstroAmount(event.target.value);
-        if (index == 1) setApyPercent(event.target.value);
-        if (index == 2) setOldAstroPrice(event.target.value);
-        if (index == 3) setNewAstroPrice(event.target.value);
+        if (index === 0) setAstroAmount(event.target.value);
+        if (index === 1) setApyPercent(event.target.value);
+        if (index === 2) setOldAstroPrice(event.target.value);
+        if (index === 3) setNewAstroPrice(event.target.value);
     }
 
     return (
