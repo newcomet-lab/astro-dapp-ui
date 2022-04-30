@@ -96,11 +96,11 @@ export default function SwapForAstro() {
         let fromDecimals = 0;
         let toDecimals = 0;
         if (isAvaxToAstro) {
-            fromDecimals = selectedToken == 0 ? wavaxTokenDecimals : usdcTokenDecimals;
+            fromDecimals = selectedToken === 0 ? wavaxTokenDecimals : usdcTokenDecimals;
             toDecimals = astroTokenDecimals;
         } else {
             fromDecimals = astroTokenDecimals;
-            toDecimals = selectedToken == 0 ? wavaxTokenDecimals : usdcTokenDecimals;
+            toDecimals = selectedToken === 0 ? wavaxTokenDecimals : usdcTokenDecimals;
         }
         return { fromDecimals, toDecimals };
     }
