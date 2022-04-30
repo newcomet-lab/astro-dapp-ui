@@ -32,13 +32,19 @@ import metamaskIcon from 'assets/images/astro/metamask.png';
 import avaxIcon from 'assets/images/astro/avax.png';
 import usdcIcon from 'assets/images/astro/usdc.png';
 import astroIcon from 'assets/images/astro/astro-icon.png';
-import { numberWithCommas } from 'utils/helpers';
+import { numberWithCommas, getNumberFromBN } from 'utils/helpers';
 
 import { useApiContract } from "react-moralis";
+import { ChainId, Token, WAVAX, Fetcher, Trade, Route, TokenAmount, TradeType, Percent, Pair } from '@traderjoe-xyz/sdk';
+
 
 import JOEROUTER_ABI from '_common/joerouter-abi.json';
+import { JsonRpcProvider } from '@ethersproject/providers';
 
+const ASTRO = new Token(ChainId.AVALANCHE, astroTokenAddress, astroTokenDecimals, "ASTRO", "Astro Token");
+const USDC = new Token(ChainId.AVALANCHE, usdcTokenAddress, usdcTokenDecimals, "USDC", "USDC Token");
 const swapBalanceOriginApiOpt = { abi: JOEROUTER_ABI, address: joerouterAddress, chain: 'avalanche' };
+
 const regexFloat = /^\d+(\.\d{0,9})?$|^$/;
 
 export default function SwapForAstro() {
@@ -55,6 +61,8 @@ export default function SwapForAstro() {
     const [arrAddress, setArrAddress] = React.useState([wavaxTokenAddress, astroTokenAddress]);
     const [isChangeFromBalance, setChangeFromBalance] = React.useState(false);
     const [isChangeToBalance, setChangeToBalance] = React.useState(false);
+    const [amountOutMin, setAmountOutMin] = React.useState(0);
+    const [amountInMax, setAmountInMax] = React.useState(0);
 
     const getToSwapBalanceApiObj = useApiContract({ ...swapBalanceOriginApiOpt, functionName: 'getAmountsOut', params: { amountIn: `${fromBalance}`, path: arrAddress } });
     const getFromSwapBalanceApiObj = useApiContract({ ...swapBalanceOriginApiOpt, functionName: 'getAmountsIn', params: { amountOut: `${toBalance}`, path: arrAddress } });
@@ -130,6 +138,7 @@ export default function SwapForAstro() {
 
     React.useEffect(() => {
         isChangeFromBalance && loadToSwapBalance();
+        loadAmountOutMin();
     }, [fromBalance]);
 
     React.useEffect(() => {
@@ -150,13 +159,25 @@ export default function SwapForAstro() {
                 .then(data => {
                     data === undefined ? setToBalance(0) : setToBalance(data[data.length - 1]);
                     setChangeFromBalance(false);
-                    console.log(fromBalance);
-                    console.log(arrAddress);
-                    console.log(data);
                 })
                 .catch(e => console.log(e));
         } catch (e) {
             console.log(e);
+        }
+    }
+
+    const loadAmountOutMin = async () => {
+        if (fromBalance !== 0) {
+            let baseProvider = new JsonRpcProvider('https://api.avax.network/ext/bc/C/rpc');
+            let pair = await Fetcher.fetchPairData(ASTRO, WAVAX[ASTRO.chainId], baseProvider);
+            let route = new Route([pair], WAVAX[ASTRO.chainId]);
+            let tradeIn = new Trade(route, new TokenAmount(WAVAX[ASTRO.chainId], fromBalance), 0)
+            // let tradeOut = new Trade(route, new TokenAmount(WAVAX[ASTRO.chainId], toBalance), 1)
+            let slippageTolerance = new Percent(slipable*100, '10000'); // 50 bips, or 0.50%
+            let amountOutMin = tradeIn.minimumAmountOut(slippageTolerance)
+            // let amountInMax = tradeOut.maximumAmountIn(slippageTolerance)
+            setAmountOutMin(amountOutMin.toFixed(18));
+            // console.log(amountInMax.toFixed(18))
         }
     }
 
@@ -165,15 +186,20 @@ export default function SwapForAstro() {
             getFromSwapBalanceApiObj.runContractFunction()
                 .then(data => {
                     data === undefined ? setFromBalance(0) : setFromBalance(data[0]);
-                    console.log(toBalance);
-                    console.log(arrAddress);
-                    console.log(data);
                     setChangeToBalance(false);
                 })
                 .catch(e => console.log(e));
         } catch (e) {
             console.log(e);
         }
+    }
+
+    const handleSwap = async () => {
+        console.log("---swap---")
+
+
+
+
     }
 
     const AvaxFormControl = <FormControl>
@@ -583,7 +609,9 @@ export default function SwapForAstro() {
                                     <Typography sx={{
                                         fontSize: '16px',
                                         fontFamily: 'Poppins'
-                                    }}>0</Typography>
+                                    }}>{isAvaxToAstro
+                                        ? toBalance / Math.pow(10, getDecimals().toDecimals) * 0.15
+                                        : fromBalance / Math.pow(10, getDecimals().fromDecimals) * 0.3}</Typography>
                                 </Grid>
                             </Grid>
                             <Grid sx={{ marginTop: '1rem' }}>
@@ -599,7 +627,10 @@ export default function SwapForAstro() {
                                     fontFamily: 'Poppins',
                                     fontSize: '16px',
                                     borderRadius: '6px',
-                                }}>Enter an amount</Button>
+                                }}
+                                    disabled={fromBalance === 0 ? true : false}
+                                    onClick={handleSwap}
+                                >{fromBalance === 0 ? "Enter an amount" : "Swap"}</Button>
                             </Grid>
                             <Grid sx={{
                                 display: 'flex',
@@ -631,11 +662,11 @@ export default function SwapForAstro() {
                                 <Typography sx={{
                                     fontSize: '14px',
                                     marginBottom: '5px'
-                                }}>Maximum sold</Typography>
+                                }}>{isAvaxToAstro ? 'Minimum received' : 'Maximum sold'}</Typography>
                                 <Typography sx={{
                                     fontSize: '14px',
                                     fontFamily: 'Poppins'
-                                }}>0 AVAX</Typography>
+                                }}>{isAvaxToAstro ? `${amountOutMin}AVAX` : `${amountInMax}AVAX`}</Typography>
                             </Grid>
                             <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{
