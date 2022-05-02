@@ -1,10 +1,12 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
     Grid,
     Typography,
     Button,
-    useMediaQuery
+    useMediaQuery,
+    CircularProgress,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
@@ -29,6 +31,10 @@ export default function RebaseClaimActivity() {
         setExpanded(newExpanded ? panel : false);
     };
 
+    let navigate = useNavigate();
+    const handleSwapHere = () => {
+        navigate('swap');
+    }
 
     return (
         <MainCard title="REBASE & CLAIM ACTIVITY">
@@ -50,20 +56,39 @@ export default function RebaseClaimActivity() {
                                     flexDirection: 'column',
                                     justifyContent: 'space-around'
                                 }}>
+
                                     <Grid sx={{
                                         padding: '0px 12px',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        textAlign: 'center'
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
                                     }}>
-                                        <Typography sx={{
-                                            fontSize: '12px',
-                                            marginBottom: '5px'
-                                        }}>TIME UNTIL<br></br>NEXT REBASE</Typography>
-                                        <Typography sx={{
-                                            fontSize: '20px',
-                                            marginBottom: '5px'
-                                        }}>00:00</Typography>
+                                        <Grid>
+                                            <CircularProgress
+                                                variant="determinate"
+                                                sx={{ color: '#feb74c' }}
+                                                value={100}
+                                                size={!matchDownSM ? '110px' : '300px'}
+                                                thickness={4.5} />
+                                        </Grid>
+                                        <Grid sx={{
+                                            position: 'absolute',
+                                            zIndex: '1',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '12px',
+                                                marginBottom: '5px',
+                                                textAlign: 'center',
+                                            }}>TIME UNTIL<br></br>NEXT REBASE</Typography>
+                                            <Typography sx={{
+                                                fontSize: '20px',
+                                            }}>00:00</Typography>
+                                        </Grid>
                                     </Grid>
                                     <Grid sx={{
                                         padding: '0px 12px',
@@ -113,7 +138,9 @@ export default function RebaseClaimActivity() {
                         <Typography sx={{
                             fontSize: '14px',
                             color: '#bcc3cf'
-                        }}>If you choose to take your weekly claim, click below for 1% to maximize your growth. If you'd like to take more earnings, swap here.</Typography>
+                        }}>
+                            If you choose to take your weekly claim, click below for 1% to maximize your growth. If you'd like to take more earnings, <a style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={handleSwapHere}>swap here</a>.
+                        </Typography>
                         <Grid sx={{
                             margin: '1rem 0px',
                             width: '100%',

@@ -164,19 +164,6 @@
         "type": "fallback"
     },
     {
-        "inputs": [],
-        "name": "MAX_FEE_RATE",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -190,6 +177,30 @@
                 "internalType": "address",
                 "name": "",
                 "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "_userSellInfos",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "startTime",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "sellAmount",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -774,6 +785,19 @@
     },
     {
         "inputs": [],
+        "name": "purchasePeriod",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "rebaseFrequency",
         "outputs": [
             {
@@ -1098,12 +1122,38 @@
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "_fee",
+                "type": "uint256"
+            }
+        ],
+        "name": "setNormalSellLimit",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "_owner",
                 "type": "address"
             }
         ],
         "name": "setOwner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_time",
+                "type": "uint256"
+            }
+        ],
+        "name": "setPurchasePeriod",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1189,6 +1239,19 @@
             }
         ],
         "name": "setTargetLiquidity",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_fee",
+                "type": "uint256"
+            }
+        ],
+        "name": "setWhaleSellLimit",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

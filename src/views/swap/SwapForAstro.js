@@ -11,6 +11,7 @@ import {
     Modal,
     TextField
 } from '@mui/material';
+import { ethers } from "ethers";
 import useAstroMoralis from 'hooks/useAstroMoralis';
 import { registerToken } from 'utils/networks';
 
@@ -39,10 +40,14 @@ import { ChainId, Token, WAVAX, Fetcher, Trade, Route, TokenAmount, TradeType, P
 
 
 import JOEROUTER_ABI from '_common/joerouter-abi.json';
+import ASTRO_ABI from "_common/ASTRO_ABI.json";
+import ROUTER_ABI from '_common/ROUTER_ABI.json';
 import { JsonRpcProvider } from '@ethersproject/providers';
 
 const ASTRO = new Token(ChainId.AVALANCHE, astroTokenAddress, astroTokenDecimals, "ASTRO", "Astro Token");
+const AVAX = new Token(ChainId.AVALANCHE, wavaxTokenAddress, wavaxTokenDecimals, "AVAX", "AVAX Token");
 const USDC = new Token(ChainId.AVALANCHE, usdcTokenAddress, usdcTokenDecimals, "USDC", "USDC Token");
+
 const swapBalanceOriginApiOpt = { abi: JOEROUTER_ABI, address: joerouterAddress, chain: 'avalanche' };
 
 const regexFloat = /^\d+(\.\d{0,9})?$|^$/;
@@ -63,9 +68,6 @@ export default function SwapForAstro() {
     const [isChangeToBalance, setChangeToBalance] = React.useState(false);
     const [amountOutMin, setAmountOutMin] = React.useState(0);
     const [amountInMax, setAmountInMax] = React.useState(0);
-
-    const getToSwapBalanceApiObj = useApiContract({ ...swapBalanceOriginApiOpt, functionName: 'getAmountsOut', params: { amountIn: `${fromBalance}`, path: arrAddress } });
-    const getFromSwapBalanceApiObj = useApiContract({ ...swapBalanceOriginApiOpt, functionName: 'getAmountsIn', params: { amountOut: `${toBalance}`, path: arrAddress } });
 
     const handleSelectToken = (event) => {
         setSelectedToken(event.target.value)
@@ -113,19 +115,61 @@ export default function SwapForAstro() {
         return { fromDecimals, toDecimals };
     }
 
+    const getToSwapBalanceApiObj = useApiContract({ ...swapBalanceOriginApiOpt, functionName: 'getAmountsOut', params: { amountIn: `${fromBalance * Math.pow(10, getDecimals().fromDecimals)}`, path: arrAddress } });
+    const getFromSwapBalanceApiObj = useApiContract({ ...swapBalanceOriginApiOpt, functionName: 'getAmountsIn', params: { amountOut: `${toBalance * Math.pow(10, getDecimals().toDecimals)}`, path: arrAddress } });
+
+
     const handleCustomBalance = (event, index) => {
         if (!regexFloat.test(event.target.value)) {
             return;
         } else {
             if (index === 0) {
-                setFromBalance(event.target.value * Math.pow(10, getDecimals().fromDecimals));
+                setFromBalance(event.target.value);
                 setChangeFromBalance(true);
             } else {
-                setToBalance(event.target.value * Math.pow(10, getDecimals().fromDecimals));
+                setToBalance(event.target.value);
                 setChangeToBalance(true);
             }
         }
     }
+
+    const swapTokens = async (token1, token2, amount, slippage = "50") => {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const accounts = await provider.send("eth_requestAccounts", []);
+        const wallet = accounts[0];
+        const ROUTER_CONTRACT = new ethers.Contract('0x60aE616a2155Ee3d9A68541Ba4544862310933d4', ROUTER_ABI, signer)
+
+        try {
+            const pair = await Fetcher.fetchPairData(token2, token1, provider); //creating instances of a pair
+            const route = await new Route([pair], token1); // a fully specified path from input token to output token
+            let amountIn = ethers.utils.parseEther(amount.toString()); //helper function to convert ETH to Wei
+            amountIn = amountIn.toString()
+            const slippageTolerance = new Percent(slippage, "10000"); // 50 bips, or 0.50% - Slippage tolerance
+            const trade = new Trade( //information necessary to create a swap transaction.
+                route,
+                new TokenAmount(token1, amountIn),
+                TradeType.EXACT_INPUT
+            );
+            const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
+            const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
+            
+            const path = [token1.address, token2.address]; //An array of token addresses
+            const to = wallet; // should be a checksummed recipient address
+            const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
+            const value = trade.inputAmount.raw; // // needs to be converted to e.g. hex
+
+            ROUTER_CONTRACT.swapExactAVAXForTokens(amountOutMinHex, (path), to, deadline, {
+                value: ethers.BigNumber.from(value.toString())
+            });
+            // ROUTER_CONTRACT.swapExactTokensForTokens(amountOutMinHex, (path), to, deadline, {
+            //     value: ethers.BigNumber.from(value.toString())
+            // });
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     React.useEffect(() => {
         isAvaxToAstro
             ? selectedToken === 0
@@ -138,7 +182,7 @@ export default function SwapForAstro() {
 
     React.useEffect(() => {
         isChangeFromBalance && loadToSwapBalance();
-        loadAmountOutMin();
+        // loadAmountOutMin();
     }, [fromBalance]);
 
     React.useEffect(() => {
@@ -148,16 +192,16 @@ export default function SwapForAstro() {
     const handleSelectCustomFromBalance = (percent) => {
         isAvaxToAstro
             ? selectedToken === 0
-                ? setFromBalance(accountAvaxBalance / 100 * percent * Math.pow(10, getDecimals().fromDecimals))
-                : setFromBalance(accountUsdcBalance / 100 * percent * Math.pow(10, getDecimals().fromDecimals))
-            : setFromBalance(accountTokenBalance / 100 * percent * Math.pow(10, getDecimals().fromDecimals))
+                ? setFromBalance(accountAvaxBalance / 100 * percent)
+                : setFromBalance(accountUsdcBalance / 100 * percent)
+            : setFromBalance(accountTokenBalance / 100 * percent)
     }
 
     const loadToSwapBalance = () => {
         try {
             getToSwapBalanceApiObj.runContractFunction()
                 .then(data => {
-                    data === undefined ? setToBalance(0) : setToBalance(data[data.length - 1]);
+                    data === undefined ? setToBalance(0) : setToBalance(data[data.length - 1] / Math.pow(10, getDecimals().toDecimals));
                     setChangeFromBalance(false);
                 })
                 .catch(e => console.log(e));
@@ -166,20 +210,33 @@ export default function SwapForAstro() {
         }
     }
 
-    const loadAmountOutMin = async () => {
-        if (fromBalance !== 0) {
-            let baseProvider = new JsonRpcProvider('https://api.avax.network/ext/bc/C/rpc');
-            let pair = await Fetcher.fetchPairData(ASTRO, WAVAX[ASTRO.chainId], baseProvider);
-            let route = new Route([pair], WAVAX[ASTRO.chainId]);
-            let tradeIn = new Trade(route, new TokenAmount(WAVAX[ASTRO.chainId], fromBalance), 0)
-            // let tradeOut = new Trade(route, new TokenAmount(WAVAX[ASTRO.chainId], toBalance), 1)
-            let slippageTolerance = new Percent(slipable*100, '10000'); // 50 bips, or 0.50%
-            let amountOutMin = tradeIn.minimumAmountOut(slippageTolerance)
-            // let amountInMax = tradeOut.maximumAmountIn(slippageTolerance)
-            setAmountOutMin(amountOutMin.toFixed(18));
-            // console.log(amountInMax.toFixed(18))
-        }
-    }
+    // const loadAmountOutMin = async () => {
+    //     const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    //     let token1 = isAvaxToAstro ? selectedToken == 0 ? AVAX : USDC : ASTRO;
+    //     let token2 = !isAvaxToAstro ? selectedToken == 0 ? AVAX : USDC : ASTRO;
+    //     try {
+    //         const pair = await Fetcher.fetchPairData(token2, token1, provider); //creating instances of a pair
+    //         const route = await new Route([pair], token1); // a fully specified path from input token to output token
+    //         let amountIn = ethers.utils.parseEther((fromBalance * Math.pow(10, getDecimals().fromDecimals)).toString()); //helper function to convert ETH to Wei
+    //         amountIn = amountIn.toString()
+    //         const slippageTolerance = new Percent(slipable * 100, "10000"); // 50 bips, or 0.50% - Slippage tolerance
+
+    //         const trade = new Trade( //information necessary to create a swap transaction.
+    //             route,
+    //             new TokenAmount(token1, amountIn),
+    //             TradeType.EXACT_INPUT
+    //         );
+
+    //         const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
+    //         const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
+    //         console.log(amountOutMin.toString())
+    //         setAmountOutMin(amountOutMinHex / Math.pow(10, token2.decimals));
+
+    //     } catch (e) {
+    //         console.log(e)
+    //     }
+    // }
 
     const loadFromSwapBalance = () => {
         try {
@@ -195,11 +252,9 @@ export default function SwapForAstro() {
     }
 
     const handleSwap = async () => {
-        console.log("---swap---")
-
-
-
-
+        let token1 = isAvaxToAstro ? selectedToken == 0 ? AVAX : USDC : ASTRO;
+        let token2 = !isAvaxToAstro ? selectedToken == 0 ? AVAX : USDC : ASTRO;
+        await swapTokens(token1, token2, fromBalance, slipable * 100);
     }
 
     const AvaxFormControl = <FormControl>
@@ -322,6 +377,15 @@ export default function SwapForAstro() {
         }}
             onClick={() => handleSelectCustomFromBalance(percent)}
         >{percent === 100 ? 'MAX' : `${percent}%`}</ButtonBase>
+    }
+
+    const buttonStatusText = () => {
+        let balance = isAvaxToAstro
+            ? selectedToken === 0
+                ? parseFloat(accountAvaxBalance)
+                : parseFloat(accountUsdcBalance)
+            : parseFloat(accountTokenBalance);
+        return fromBalance === 0 ? 0 : parseFloat(fromBalance) >= balance ? 1 : 2;
     }
 
     return (
@@ -471,7 +535,7 @@ export default function SwapForAstro() {
                                     }}>Balance:{accountAvaxBalance && accountUsdcBalance && accountTokenBalance
                                         ? isAvaxToAstro
                                             ? selectedToken === 0
-                                                ? numberWithCommas(accountAvaxBalance.toFixed(3))
+                                                ? numberWithCommas(parseFloat(accountAvaxBalance).toFixed(3))
                                                 : numberWithCommas(accountUsdcBalance.toFixed(3))
                                             : numberWithCommas(accountTokenBalance.toFixed(3))
                                         : 0}
@@ -495,7 +559,7 @@ export default function SwapForAstro() {
                                                 borderColor: '#10123e !important',
                                             }
                                         }}
-                                        value={fromBalance / Math.pow(10, getDecimals().fromDecimals)}
+                                        value={fromBalance}
                                         onChange={(e) => handleCustomBalance(e, 0)} />
                                     <Grid sx={{ display: 'flex', alignItems: 'center' }}>
                                         {isAvaxToAstro
@@ -549,7 +613,7 @@ export default function SwapForAstro() {
                                     }}>Balance:{accountAvaxBalance && accountUsdcBalance && accountTokenBalance
                                         ? !isAvaxToAstro
                                             ? selectedToken === 0
-                                                ? numberWithCommas(accountAvaxBalance.toFixed(3))
+                                                ? numberWithCommas(parseFloat(accountAvaxBalance).toFixed(3))
                                                 : numberWithCommas(accountUsdcBalance.toFixed(3))
                                             : numberWithCommas(accountTokenBalance.toFixed(3))
                                         : 0}
@@ -573,7 +637,7 @@ export default function SwapForAstro() {
                                                 borderColor: '#10123e !important',
                                             }
                                         }}
-                                        value={toBalance / Math.pow(10, getDecimals().toDecimals)}
+                                        value={toBalance}
                                         onChange={(e) => handleCustomBalance(e, 1)} />
                                     <Grid sx={{ display: 'flex', alignItems: 'center' }}>
                                         {!isAvaxToAstro ? AvaxFormControl : AstroFormControl}
@@ -610,8 +674,8 @@ export default function SwapForAstro() {
                                         fontSize: '16px',
                                         fontFamily: 'Poppins'
                                     }}>{isAvaxToAstro
-                                        ? toBalance / Math.pow(10, getDecimals().toDecimals) * 0.15
-                                        : fromBalance / Math.pow(10, getDecimals().fromDecimals) * 0.3}</Typography>
+                                        ? toBalance * 0.15
+                                        : fromBalance * 0.3}</Typography>
                                 </Grid>
                             </Grid>
                             <Grid sx={{ marginTop: '1rem' }}>
@@ -628,9 +692,9 @@ export default function SwapForAstro() {
                                     fontSize: '16px',
                                     borderRadius: '6px',
                                 }}
-                                    disabled={fromBalance === 0 ? true : false}
+                                    disabled={buttonStatusText() === 2 ? false : true}
                                     onClick={handleSwap}
-                                >{fromBalance === 0 ? "Enter an amount" : "Swap"}</Button>
+                                >{buttonStatusText() === 0 ? "Enter an amount" : buttonStatusText() === 1 ? "Insufficient AVAX balance" : "Swap"}</Button>
                             </Grid>
                             <Grid sx={{
                                 display: 'flex',
@@ -666,7 +730,7 @@ export default function SwapForAstro() {
                                 <Typography sx={{
                                     fontSize: '14px',
                                     fontFamily: 'Poppins'
-                                }}>{isAvaxToAstro ? `${amountOutMin}AVAX` : `${amountInMax}AVAX`}</Typography>
+                                }}>{isAvaxToAstro ? `${amountOutMin}ASTRO` : `${amountInMax}AVAX`}</Typography>
                             </Grid>
                             <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{

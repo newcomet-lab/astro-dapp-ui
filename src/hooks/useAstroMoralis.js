@@ -2,10 +2,11 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { useApiContract, useMoralis, useNativeBalance, useERC20Balances } from "react-moralis";
 
-import ASTRO_ABI from '_common/astro-abi.json';
+import ASTRO_ABI from '_common/ASTRO_ABI.json';
 import { astroTokenAddress, usdcTokenAddress } from '_common/token-constants';
 
 import { calcAPY, getNumberFromBN } from 'utils/helpers';
+import { ethers } from "ethers";
 
 const AstroMoralisContext = createContext(null);
 
@@ -41,14 +42,14 @@ export const AstroMoralisProvider = ({ children }) => {
     const [accountTokenBalance, setAccountTokenBalance] = useState(null);
     const [accountAvaxBalance, setAccountAvaxBalance] = useState(null);
     const [accountUsdcBalance, setAccountUsdcBalance] = useState(null);
-    
+
     const { isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading, account } = useMoralis();
 
     const rewardApiObj = useApiContract(rewardApiOpt);
     const rewardDominatorApiObj = useApiContract(rewardDominatorApiOpt);
     const rebaseFrequencyApiObj = useApiContract(rebaseFrequencyApiOpt);
     const accountTokenBalanceApiObj = useApiContract({ ...accountTokenBalanceApiOpt, params: { who: account } });
-    const { data: balance } = useNativeBalance({ chain: "avalanche" });
+    // const { data: balance } = useNativeBalance({ chain: "avalanche" });
     const { fetchERC20Balances, data, isLoading, isFetching, error } = useERC20Balances();
 
     useEffect(() => {
@@ -120,11 +121,12 @@ export const AstroMoralisProvider = ({ children }) => {
         let isUpdated = true;
         if (isUpdated) {
             (async () => {
-                if (isWeb3Enabled && account && isAuthenticated && !isFetching && data) {
+                if (isWeb3Enabled && account && isAuthenticated && !isFetching && data && data.length > 0) {
+
                     let usdc = data.find(token => token.token_address === usdcTokenAddress.toLowerCase());
                     let astro = data.find(token => token.token_address === astroTokenAddress.toLowerCase());
-                    setAccountTokenBalance(getNumberFromBN(astro.balance, astro.decimals));
-                    setAccountUsdcBalance(getNumberFromBN(usdc.balance, usdc.decimals));
+                    setAccountTokenBalance(astro.balance / Math.pow(10, astro.decimals));
+                    setAccountUsdcBalance(usdc.balance / Math.pow(10, usdc.decimals));
                 }
             })();
         }
@@ -156,7 +158,11 @@ export const AstroMoralisProvider = ({ children }) => {
         if (isUpdated) {
             (async () => {
                 if (isWeb3Enabled && account && isAuthenticated) {
-                    setAccountAvaxBalance(balance.balance / Math.pow(10, 18));
+                    let provider = new ethers.providers.Web3Provider(window.ethereum);
+                    let accounts = await provider.send("eth_requestAccounts", []);
+                    let balance = await provider.getBalance(accounts[0]);
+                    let balanceInEther = ethers.utils.formatEther(balance);
+                    setAccountAvaxBalance(balanceInEther);
                     fetchERC20Balances({ params: { chain: "avalanche" } });
                 }
             })();
