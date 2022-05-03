@@ -710,7 +710,7 @@ export default function SwapForAstro() {
                                     astroIcon,
                                 )}
                             >
-                                <img src={metamaskIcon} style={{ width: '30px', height: '30px' }} />
+                                <img src={astroIcon} style={{ width: '30px', height: '30px' }} />
                                 <Typography sx={{
                                     fontSize: '14px',
                                     fontFamily: 'Poppins',

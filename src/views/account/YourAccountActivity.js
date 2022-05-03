@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
     Grid,
@@ -10,7 +11,15 @@ import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
 
 export default function YourAccountActivity() {
+    const handleDexCharts = () => {
+        window.open('https://dexscreener.com/avalanche/0x7de9d08b1281455aC2D2C6f30ad3B1C9e954b608');
+    }
 
+    let navigate = useNavigate();
+    const handleBuyAstro = () => {
+        navigate('swap');
+    }
+    
     return (
         <MainCard title="YOUR ACCOUNT ACTIVITY">
             <Grid container sx={{ rowGap: '15px' }}>
@@ -137,7 +146,7 @@ export default function YourAccountActivity() {
                     </Grid>
                 </Grid>
 
-                <Grid item container xs={12} md={12}>
+                {/* <Grid item container xs={12} md={12}>
                     <Grid sx={{
                         padding: '0px 12px',
                         height: '380px',
@@ -148,7 +157,7 @@ export default function YourAccountActivity() {
 
                         </SubCard>
                     </Grid>
-                </Grid>
+                </Grid> */}
                 <Grid item container xs={12} md={12} >
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
                         <Button variant="contained" sx={{
@@ -169,7 +178,8 @@ export default function YourAccountActivity() {
                                 boxShadow: '1px 1px 10px 0 #fa34b2',
                                 transition: 'all .3s ease'
                             }
-                        }}>DEX<br></br>Charts</Button>
+                        }}
+                        onClick={handleDexCharts}>DEX Charts</Button>
                     </Grid>
                     <Grid item xs={12} sm={6} sx={{ padding: '0px 12px' }}>
                         <Button variant="contained" sx={{
@@ -188,7 +198,8 @@ export default function YourAccountActivity() {
                                 boxShadow: '1px 1px 10px 0 #fa34b2',
                                 transition: 'all .3s ease'
                             }
-                        }}>Buy<br></br>ASTRO</Button>
+                        }}
+                        onClick={handleBuyAstro}>Buy ASTRO</Button>
                     </Grid>
                 </Grid>
             </Grid >

@@ -29,7 +29,7 @@ export default function YourActivity() {
     return (
         <MainCard title="YOUR ACTIVITY">
             <Grid container sx={{ rowGap: '15px' }}>
-                <Grid item container xs={12} md={6} sx={{
+                <Grid item container xs={12} md={12} sx={{
                     display: 'flex',
                     flexWrap: 'wrap',
                     rowGap: '15px'
@@ -200,7 +200,7 @@ export default function YourActivity() {
                     </Grid>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                {/* <Grid item xs={12} md={6}>
                     <Grid sx={{
                         padding: '0px 12px',
                         height: '100%',
@@ -210,7 +210,7 @@ export default function YourActivity() {
 
                         </SubCard>
                     </Grid>
-                </Grid>
+                </Grid> */}
             </Grid >
         </MainCard >
     );
