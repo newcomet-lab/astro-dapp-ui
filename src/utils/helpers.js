@@ -32,7 +32,7 @@ export function formatFloatFixedUnsigned(val, dec) {
 
 
 export function numberWithCommas(num) {
-    return num == null ? 0 : num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return num === null ? 0 : num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 export const getNumberFromStrBN = (str_bn, dec) => {

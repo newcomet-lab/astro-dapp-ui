@@ -39,7 +39,7 @@ import { useApiContract } from "react-moralis";
 import { ChainId, Token, WAVAX, Fetcher, Trade, Route, TokenAmount, TradeType, Percent, Pair } from '@traderjoe-xyz/sdk';
 
 
-import JOEROUTER_ABI from '_common/joerouter-abi.json';
+import JOEROUTER_ABI from '_common/ROUTER_ABI.json';
 import ASTRO_ABI from "_common/ASTRO_ABI.json";
 import ROUTER_ABI from '_common/ROUTER_ABI.json';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -48,7 +48,7 @@ const ASTRO = new Token(ChainId.AVALANCHE, astroTokenAddress, astroTokenDecimals
 const AVAX = new Token(ChainId.AVALANCHE, wavaxTokenAddress, wavaxTokenDecimals, "AVAX", "AVAX Token");
 const USDC = new Token(ChainId.AVALANCHE, usdcTokenAddress, usdcTokenDecimals, "USDC", "USDC Token");
 
-const swapBalanceOriginApiOpt = { abi: JOEROUTER_ABI, address: joerouterAddress, chain: 'avalanche' };
+const swapBalanceOriginApiOpt = { abi: ROUTER_ABI, address: joerouterAddress, chain: 'avalanche' };
 
 const regexFloat = /^\d+(\.\d{0,9})?$|^$/;
 
@@ -213,8 +213,8 @@ export default function SwapForAstro() {
     // const loadAmountOutMin = async () => {
     //     const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    //     let token1 = isAvaxToAstro ? selectedToken == 0 ? AVAX : USDC : ASTRO;
-    //     let token2 = !isAvaxToAstro ? selectedToken == 0 ? AVAX : USDC : ASTRO;
+    //     let token1 = isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
+    //     let token2 = !isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
     //     try {
     //         const pair = await Fetcher.fetchPairData(token2, token1, provider); //creating instances of a pair
     //         const route = await new Route([pair], token1); // a fully specified path from input token to output token
@@ -252,8 +252,8 @@ export default function SwapForAstro() {
     }
 
     const handleSwap = async () => {
-        let token1 = isAvaxToAstro ? selectedToken == 0 ? AVAX : USDC : ASTRO;
-        let token2 = !isAvaxToAstro ? selectedToken == 0 ? AVAX : USDC : ASTRO;
+        let token1 = isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
+        let token2 = !isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
         await swapTokens(token1, token2, fromBalance, slipable * 100);
     }
 
