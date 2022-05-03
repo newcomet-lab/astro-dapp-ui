@@ -33,10 +33,10 @@ import metamaskIcon from 'assets/images/astro/metamask.png';
 import avaxIcon from 'assets/images/astro/avax.png';
 import usdcIcon from 'assets/images/astro/usdc.png';
 import astroIcon from 'assets/images/astro/astro-icon.png';
-import { numberWithCommas, getNumberFromBN } from 'utils/helpers';
+import { numberWithCommas, getNumberFromBN, getBNFromNumber } from 'utils/helpers';
 
 import { useApiContract } from "react-moralis";
-import { ChainId, Token, WAVAX, Fetcher, Trade, Route, TokenAmount, TradeType, Percent, Pair } from '@traderjoe-xyz/sdk';
+import { ChainId, Token, WAVAX, CAVAX, Fetcher, Trade, Route, TokenAmount, TradeType, Percent, Pair, Router, JSBI } from '@traderjoe-xyz/sdk';
 
 
 import JOEROUTER_ABI from '_common/ROUTER_ABI.json';
@@ -133,38 +133,88 @@ export default function SwapForAstro() {
         }
     }
 
-    const swapTokens = async (token1, token2, amount, slippage = "50") => {
+    const swapTokens = async (token1, token2, amount, slippage = "50", status) => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const accounts = await provider.send("eth_requestAccounts", []);
         const wallet = accounts[0];
         const ROUTER_CONTRACT = new ethers.Contract('0x60aE616a2155Ee3d9A68541Ba4544862310933d4', ROUTER_ABI, signer)
 
+        const amountIn = ethers.utils.parseUnits(amount, getDecimals().fromDecimals);
+        const amountOut = ethers.utils.parseUnits(toBalance.toString(), getDecimals().toDecimals);
+        const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
         try {
-            const pair = await Fetcher.fetchPairData(token2, token1, provider); //creating instances of a pair
-            const route = await new Route([pair], token1); // a fully specified path from input token to output token
-            let amountIn = ethers.utils.parseEther(amount.toString()); //helper function to convert ETH to Wei
-            amountIn = amountIn.toString()
-            const slippageTolerance = new Percent(slippage, "10000"); // 50 bips, or 0.50% - Slippage tolerance
-            const trade = new Trade( //information necessary to create a swap transaction.
-                route,
-                new TokenAmount(token1, amountIn),
-                TradeType.EXACT_INPUT
-            );
-            const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
-            const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
-            
-            const path = [token1.address, token2.address]; //An array of token addresses
-            const to = wallet; // should be a checksummed recipient address
-            const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
-            const value = trade.inputAmount.raw; // // needs to be converted to e.g. hex
+            if (status === 0) {
+                const pair = await Fetcher.fetchPairData(token2, token1, provider);
+                const route = new Route([pair], token1);
+                const slippageTolerance = new Percent(slippage, "10000");
+                const trade = new Trade(
+                    route,
+                    new TokenAmount(token1, ethers.utils.parseEther(amount.toString()).toString()),
+                    TradeType.EXACT_INPUT
+                );
+                const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw;
+                const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
+                const value = trade.inputAmount.raw;
+    
+                const path = [token1.address, token2.address];
 
-            ROUTER_CONTRACT.swapExactAVAXForTokens(amountOutMinHex, (path), to, deadline, {
-                value: ethers.BigNumber.from(value.toString())
-            });
-            // ROUTER_CONTRACT.swapExactTokensForTokens(amountOutMinHex, (path), to, deadline, {
-            //     value: ethers.BigNumber.from(value.toString())
-            // });
+                ROUTER_CONTRACT.swapExactAVAXForTokens(
+                    amountOutMinHex, 
+                    path,
+                    wallet,
+                    deadline,
+                    { value: ethers.BigNumber.from(value.toString()) }
+                );
+            } else if (status === 1 || status === 3) {
+                const pair1 = await Fetcher.fetchPairData(AVAX, token1, provider);
+                const pair2 = await Fetcher.fetchPairData(token2, AVAX, provider);
+                const route = new Route([pair1, pair2], token1);
+                const slippageTolerance = new Percent(slippage, "10000");
+                const trade = new Trade(
+                    route,
+                    new TokenAmount(token1, ethers.utils.parseUnits(amount.toString(), getDecimals().fromDecimals).toString()),
+                    TradeType.EXACT_INPUT
+                );
+                const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw;
+                const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
+                console.log(ethers.utils.formatEther(amountOutMin.toString()));
+                console.log(route.path.map(r => r.address));
+                const path = route.path.map(r => r.address);
+
+                ROUTER_CONTRACT.swapExactTokensForTokens(
+                    amountIn.toHexString(),
+                    amountOutMinHex,
+                    path,
+                    wallet,
+                    deadline,
+                    { value: 0 }
+                );
+
+            } else if (status === 2) {
+                const pair = await Fetcher.fetchPairData(token2, token1, provider);
+                const route = new Route([pair], token1);
+                const slippageTolerance = new Percent(slippage, "10000");
+                const trade = new Trade(
+                    route,
+                    new TokenAmount(token1, ethers.utils.parseEther(amount.toString()).toString()),
+                    TradeType.EXACT_OUTPUT
+                );
+                const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw;
+                const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
+                const value = trade.inputAmount.raw;
+    
+                const path = [token1.address, token2.address];
+
+                ROUTER_CONTRACT.swapExactAVAXForTokens(
+                    amountOutMinHex, 
+                    path,
+                    wallet,
+                    deadline,
+                    { value: ethers.BigNumber.from(value.toString()) }
+                );
+
+            }
         } catch (e) {
             console.log(e)
         }
@@ -254,7 +304,14 @@ export default function SwapForAstro() {
     const handleSwap = async () => {
         let token1 = isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
         let token2 = !isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
-        await swapTokens(token1, token2, fromBalance, slipable * 100);
+        let status = isAvaxToAstro  // 0: AVAX->ASTRO, 1: USDC->ASTRO, 2: ASTRO->AVAX, 3: ASTRO->USDC
+            ? selectedToken === 0
+                ? 0
+                : 1
+            : !isAvaxToAstro && selectedToken === 0
+                ? 2
+                : 3;
+        await swapTokens(token1, token2, fromBalance, slipable * 100, status);
     }
 
     const AvaxFormControl = <FormControl>

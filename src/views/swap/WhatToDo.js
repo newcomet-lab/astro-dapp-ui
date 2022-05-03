@@ -124,7 +124,6 @@ export default function WhatToDo() {
                             }}>Astro Amount</Typography>
                             <Grid>
                                 <TextField
-                                    defaultValue={'0'}
                                     tx={{
                                         width: '50%',
                                         background: 'transparent',
@@ -171,7 +170,6 @@ export default function WhatToDo() {
                                 width: '100%',
                             }}>APY (%)</Typography>
                             <TextField
-                                defaultValue={'0'}
                                 tx={{
                                     '& .MuiInputBase-input.MuiOutlinedInput-input': {
                                         alignItems: 'center',
@@ -231,7 +229,6 @@ export default function WhatToDo() {
                                 width: '100%',
                             }}>ASTRO Price at purchase ($)</Typography>
                             <TextField
-                                defaultValue={'0'}
                                 tx={{
                                     '& .MuiInputBase-input.MuiOutlinedInput-input': {
                                         alignItems: 'center',
@@ -288,7 +285,6 @@ export default function WhatToDo() {
                                 width: '100%',
                             }}>Future ASTRO Price ($)</Typography>
                             <TextField
-                                defaultValue={'0'}
                                 tx={{
                                     '& .MuiInputBase-input.MuiOutlinedInput-input': {
                                         alignItems: 'center',
