@@ -182,7 +182,7 @@ export default function SwapForAstro() {
 
     React.useEffect(() => {
         isChangeFromBalance && loadToSwapBalance();
-        // loadAmountOutMin();
+        loadAmountOutMin();
     }, [fromBalance]);
 
     React.useEffect(() => {
@@ -210,33 +210,33 @@ export default function SwapForAstro() {
         }
     }
 
-    // const loadAmountOutMin = async () => {
-    //     const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const loadAmountOutMin = async () => {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    //     let token1 = isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
-    //     let token2 = !isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
-    //     try {
-    //         const pair = await Fetcher.fetchPairData(token2, token1, provider); //creating instances of a pair
-    //         const route = await new Route([pair], token1); // a fully specified path from input token to output token
-    //         let amountIn = ethers.utils.parseEther((fromBalance * Math.pow(10, getDecimals().fromDecimals)).toString()); //helper function to convert ETH to Wei
-    //         amountIn = amountIn.toString()
-    //         const slippageTolerance = new Percent(slipable * 100, "10000"); // 50 bips, or 0.50% - Slippage tolerance
+        let token1 = isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
+        let token2 = !isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
+        try {
+            const pair = await Fetcher.fetchPairData(token2, token1, provider); //creating instances of a pair
+            const route = await new Route([pair], token1); // a fully specified path from input token to output token
+            let amountIn = ethers.utils.parseEther((fromBalance * Math.pow(10, getDecimals().fromDecimals)).toString()); //helper function to convert ETH to Wei
+            amountIn = amountIn.toString()
+            const slippageTolerance = new Percent(slipable * 100, "10000"); // 50 bips, or 0.50% - Slippage tolerance
 
-    //         const trade = new Trade( //information necessary to create a swap transaction.
-    //             route,
-    //             new TokenAmount(token1, amountIn),
-    //             TradeType.EXACT_INPUT
-    //         );
+            const trade = new Trade( //information necessary to create a swap transaction.
+                route,
+                new TokenAmount(token1, amountIn),
+                TradeType.EXACT_INPUT
+            );
 
-    //         const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
-    //         const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
-    //         console.log(amountOutMin.toString())
-    //         setAmountOutMin(amountOutMinHex / Math.pow(10, token2.decimals));
+            const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
+            const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
+            console.log(amountOutMin.toString())
+            setAmountOutMin(amountOutMinHex / Math.pow(10, token2.decimals));
 
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    // }
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     const loadFromSwapBalance = () => {
         try {
