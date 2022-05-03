@@ -74,7 +74,7 @@ const Header = ({ handleLeftDrawerToggle, leftDrawerOpened }) => {
                             )
                         }}
                     >
-                        <img alt='metamask' width={30} src={METAMAST_IMAGE} />
+                        <img alt='metamask' width={30} src={ASTRO_IMAGE} />
                         <Typography>Add ASTRO token to MetaMask</Typography>
                     </ButtonBase>
                 }
