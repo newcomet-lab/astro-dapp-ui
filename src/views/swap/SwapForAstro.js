@@ -21,386 +21,342 @@ import SubCard from 'ui-component/cards/SubCard';
 import { IconArrowsUpDown, IconSettings } from '@tabler/icons';
 import {
     astroTokenAddress,
-    joerouterAddress,
-    wavaxTokenAddress,
     usdcTokenAddress,
     astroTokenDecimals,
-    wavaxTokenDecimals,
     usdcTokenDecimals
 } from '_common/token-constants';
 
-import metamaskIcon from 'assets/images/astro/metamask.png';
 import avaxIcon from 'assets/images/astro/avax.png';
 import usdcIcon from 'assets/images/astro/usdc.png';
 import astroIcon from 'assets/images/astro/astro-icon.png';
-import { numberWithCommas, getNumberFromBN, getBNFromNumber } from 'utils/helpers';
+import { numberWithCommas } from 'utils/helpers';
 
-import { useApiContract } from "react-moralis";
-import { ChainId, Token, WAVAX, CAVAX, Fetcher, Trade, Route, TokenAmount, TradeType, Percent, Pair, Router, JSBI } from '@traderjoe-xyz/sdk';
+import {
+    ChainId,
+    Token,
+    WAVAX as WAVAX_ALL,
+    Fetcher,
+    Trade,
+    Route,
+    TokenAmount,
+    TradeType,
+    Percent,
+    Router,
+    ROUTER_ADDRESS as ROUTER_ADDRESS_ALL
+} from '@traderjoe-xyz/sdk';
+import ROUTER_ABI from '@traderjoe-xyz/core/abi/JoeRouter02'
 
+const { BigNumber } = ethers;
+const { parseUnits, formatUnits } = ethers.utils;
 
-import JOEROUTER_ABI from '_common/ROUTER_ABI.json';
-import ASTRO_ABI from "_common/ASTRO_ABI.json";
-import ROUTER_ABI from '_common/ROUTER_ABI.json';
-import { JsonRpcProvider } from '@ethersproject/providers';
+const chainId = ChainId.AVALANCHE;
+const ROUTER_ADDRESS = ROUTER_ADDRESS_ALL[chainId];
 
 const ASTRO = new Token(ChainId.AVALANCHE, astroTokenAddress, astroTokenDecimals, "ASTRO", "Astro Token");
-const AVAX = new Token(ChainId.AVALANCHE, wavaxTokenAddress, wavaxTokenDecimals, "AVAX", "AVAX Token");
+const WAVAX = new Token(ChainId.AVALANCHE, WAVAX_ALL[chainId].address, WAVAX_ALL[chainId].decimals, "AVAX", WAVAX_ALL[chainId].name);
 const USDC = new Token(ChainId.AVALANCHE, usdcTokenAddress, usdcTokenDecimals, "USDC", "USDC Token");
 
-const swapBalanceOriginApiOpt = { abi: ROUTER_ABI, address: joerouterAddress, chain: 'avalanche' };
+const TOKEN_ICONS = {
+    [ASTRO.symbol] : astroIcon,
+    [WAVAX.symbol] : avaxIcon,
+    [USDC.symbol] : usdcIcon,
+}
 
 const regexFloat = /^\d+(\.\d{0,9})?$|^$/;
 
 export default function SwapForAstro() {
     const [{ accountTokenBalance, accountAvaxBalance, accountUsdcBalance }] = useAstroMoralis();
+    const [tokenBalanceList, setTokenBalanceList] = React.useState({
+        [ASTRO.symbol]: 0,
+        [WAVAX.symbol]: 0,
+        [USDC.symbol]: 0,
+    });
 
-    const [selectedToken, setSelectedToken] = React.useState(0); // 0: AVAX, 1: USDC
-    const [selectedAstroToken, setSelectedAstroToken] = React.useState(0); // 0: ASTRO
-    const [isOpenSlippage, setOpenSlippage] = React.useState(false);
-    const [isAvaxToAstro, setAvaxToAstro] = React.useState(true);
+    React.useEffect(() => {
+        if (accountTokenBalance && accountAvaxBalance && accountUsdcBalance) {
+            setTokenBalanceList({
+                [ASTRO.symbol]: accountTokenBalance,
+                [WAVAX.symbol]: accountAvaxBalance,
+                [USDC.symbol]: accountUsdcBalance
+            });
+        }
+    }, [accountTokenBalance, accountAvaxBalance, accountUsdcBalance]);
+
+    const [isOpenSlippageDialog, setIsOpenSlippageDialog] = React.useState(false);
+    
+    const [tokenPairs, setTokenPairs] = React.useState([]);
+    const [tokenListFrom, setTokenListFrom] = React.useState([WAVAX, USDC]);
+    const [tokenListTo, setTokenListTo] = React.useState([ASTRO]);
+    const [idxTokenFrom, setIdxTokenFrom] = React.useState(0);
+    const [idxTokenTo, setIdxTokenTo] = React.useState(0);
+    const [tradeType, setTradeType] = React.useState(TradeType.EXACT_INPUT);
+    const [amountFrom, setAmountFrom] = React.useState(0);
+    const [amountTo, setAmountTo] = React.useState(0);
     const [slipable, setSlipable] = React.useState(0.1);
-    const [customSlipable, setCustomSlipable] = React.useState('');
-    const [fromBalance, setFromBalance] = React.useState(0);
-    const [toBalance, setToBalance] = React.useState(0);
-    const [arrAddress, setArrAddress] = React.useState([wavaxTokenAddress, astroTokenAddress]);
-    const [isChangeFromBalance, setChangeFromBalance] = React.useState(false);
-    const [isChangeToBalance, setChangeToBalance] = React.useState(false);
-    const [amountOutMin, setAmountOutMin] = React.useState(0);
-    const [amountInMax, setAmountInMax] = React.useState(0);
+    const [slippedAmount, setSlippedAmount] = React.useState(0);
+    const [priceImpact, setPriceImpact] = React.useState(0);
 
-    const handleSelectToken = (event) => {
-        setSelectedToken(event.target.value)
-    }
-
-    const handleSelectAstroToken = (event) => {
-        setSelectedAstroToken(event.target.value);
-    }
-
-    const handleOpenSlippageSetting = () => {
-        setOpenSlippage(true);
-    }
-
-    const handleCloseSlippageSetting = () => {
-        setOpenSlippage(false);
-    }
-
-    const handleAvaxToAstro = () => {
-        setAvaxToAstro(!isAvaxToAstro);
-    }
-
-    const handleSlipPercent = (percent) => {
-        percent === 'AUTO' ? setSlipable(1.0) : setSlipable(percent);
-    }
-
-    const handleCustomSlipPercent = (event) => {
-        if (!regexFloat.test(event.target.value)) {
-            return;
+    const handleClickReplaceList = () => {
+        if (tradeType === TradeType.EXACT_INPUT) {
+            setAmountTo(amountFrom);
+            setTradeType(TradeType.EXACT_OUTPUT);
         } else {
-            setCustomSlipable(event.target.value);
-            setSlipable(event.target.value);
+            setAmountFrom(amountTo);
+            setTradeType(TradeType.EXACT_INPUT);
         }
+        const tmp = tokenListFrom.slice();
+        setTokenListFrom(tokenListTo);
+        setTokenListTo(tmp);
+        const tmp_ = parseInt(idxTokenFrom);
+        setIdxTokenFrom(idxTokenTo);
+        setIdxTokenTo(tmp_);
     }
 
-    const getDecimals = () => {
-        let fromDecimals = 0;
-        let toDecimals = 0;
-        if (isAvaxToAstro) {
-            fromDecimals = selectedToken === 0 ? wavaxTokenDecimals : usdcTokenDecimals;
-            toDecimals = astroTokenDecimals;
-        } else {
-            fromDecimals = astroTokenDecimals;
-            toDecimals = selectedToken === 0 ? wavaxTokenDecimals : usdcTokenDecimals;
-        }
-        return { fromDecimals, toDecimals };
-    }
-
-    const getToSwapBalanceApiObj = useApiContract({ ...swapBalanceOriginApiOpt, functionName: 'getAmountsOut', params: { amountIn: `${fromBalance * Math.pow(10, getDecimals().fromDecimals)}`, path: arrAddress } });
-    const getFromSwapBalanceApiObj = useApiContract({ ...swapBalanceOriginApiOpt, functionName: 'getAmountsIn', params: { amountOut: `${toBalance * Math.pow(10, getDecimals().toDecimals)}`, path: arrAddress } });
-
-
-    const handleCustomBalance = (event, index) => {
-        if (!regexFloat.test(event.target.value)) {
-            return;
-        } else {
-            if (index === 0) {
-                setFromBalance(event.target.value);
-                setChangeFromBalance(true);
-            } else {
-                setToBalance(event.target.value);
-                setChangeToBalance(true);
-            }
-        }
-    }
-
-    const swapTokens = async (token1, token2, amount, slippage = "50", status) => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const accounts = await provider.send("eth_requestAccounts", []);
-        const wallet = accounts[0];
-        const ROUTER_CONTRACT = new ethers.Contract('0x60aE616a2155Ee3d9A68541Ba4544862310933d4', ROUTER_ABI, signer)
-
-        const amountIn = ethers.utils.parseUnits(amount, getDecimals().fromDecimals);
-        const amountOut = ethers.utils.parseUnits(toBalance.toString(), getDecimals().toDecimals);
-        const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
+    const loadSwappableAmount = () => {
         try {
-            if (status === 0) {
-                const pair = await Fetcher.fetchPairData(token2, token1, provider);
-                const route = new Route([pair], token1);
-                const slippageTolerance = new Percent(slippage, "10000");
-                const trade = new Trade(
-                    route,
-                    new TokenAmount(token1, ethers.utils.parseEther(amount.toString()).toString()),
-                    TradeType.EXACT_INPUT
-                );
-                const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw;
-                const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
-                const value = trade.inputAmount.raw;
+            const _amountFrom = parseFloat(amountFrom);
+            const _amountTo = parseFloat(amountTo);
     
-                const path = [token1.address, token2.address];
+            let pairs = [];
 
-                ROUTER_CONTRACT.swapExactAVAXForTokens(
-                    amountOutMinHex, 
-                    path,
-                    wallet,
-                    deadline,
-                    { value: ethers.BigNumber.from(value.toString()) }
-                );
-            } else if (status === 1 || status === 3) {
-                const pair1 = await Fetcher.fetchPairData(AVAX, token1, provider);
-                const pair2 = await Fetcher.fetchPairData(token2, AVAX, provider);
-                const route = new Route([pair1, pair2], token1);
-                const slippageTolerance = new Percent(slippage, "10000");
-                const trade = new Trade(
-                    route,
-                    new TokenAmount(token1, ethers.utils.parseUnits(amount.toString(), getDecimals().fromDecimals).toString()),
-                    TradeType.EXACT_INPUT
-                );
-                const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw;
-                const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
-                console.log(ethers.utils.formatEther(amountOutMin.toString()));
-                console.log(route.path.map(r => r.address));
-                const path = route.path.map(r => r.address);
-
-                ROUTER_CONTRACT.swapExactTokensForTokens(
-                    amountIn.toHexString(),
-                    amountOutMinHex,
-                    path,
-                    wallet,
-                    deadline,
-                    { value: 0 }
-                );
-
-            } else if (status === 2) {
-                const pair = await Fetcher.fetchPairData(token2, token1, provider);
-                const route = new Route([pair], token1);
-                const slippageTolerance = new Percent(slippage, "10000");
-                const trade = new Trade(
-                    route,
-                    new TokenAmount(token1, ethers.utils.parseEther(amount.toString()).toString()),
-                    TradeType.EXACT_OUTPUT
-                );
-                const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw;
-                const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
-                const value = trade.inputAmount.raw;
-    
-                const path = [token1.address, token2.address];
-
-                ROUTER_CONTRACT.swapExactAVAXForTokens(
-                    amountOutMinHex, 
-                    path,
-                    wallet,
-                    deadline,
-                    { value: ethers.BigNumber.from(value.toString()) }
-                );
-
+            const tokenFrom = tokenListFrom[idxTokenFrom];
+            const tokenTo = tokenListTo[idxTokenTo];
+            if (tokenFrom.symbol === WAVAX.symbol || tokenTo.symbol === WAVAX.symbol) {
+                pairs = [tokenPairs[0]];
+            } else if (tokenFrom.symbol === USDC.symbol) {
+                pairs = [tokenPairs[1], tokenPairs[0]];
+            } else if (tokenTo.symbol === USDC.symbol) {
+                pairs = [tokenPairs[0], tokenPairs[1]];
             }
-        } catch (e) {
-            console.log(e)
-        }
-    }
 
-    React.useEffect(() => {
-        isAvaxToAstro
-            ? selectedToken === 0
-                ? setArrAddress([wavaxTokenAddress, astroTokenAddress])
-                : setArrAddress([usdcTokenAddress, wavaxTokenAddress, astroTokenAddress])
-            : selectedToken === 0
-                ? setArrAddress([astroTokenAddress, wavaxTokenAddress])
-                : setArrAddress([astroTokenAddress, wavaxTokenAddress, usdcTokenAddress])
-    }, [isAvaxToAstro, selectedToken]);
-
-    React.useEffect(() => {
-        isChangeFromBalance && loadToSwapBalance();
-        loadAmountOutMin();
-    }, [fromBalance]);
-
-    React.useEffect(() => {
-        isChangeToBalance && loadFromSwapBalance();
-    }, [toBalance]);
-
-    const handleSelectCustomFromBalance = (percent) => {
-        isAvaxToAstro
-            ? selectedToken === 0
-                ? setFromBalance(accountAvaxBalance / 100 * percent)
-                : setFromBalance(accountUsdcBalance / 100 * percent)
-            : setFromBalance(accountTokenBalance / 100 * percent)
-    }
-
-    const loadToSwapBalance = () => {
-        try {
-            getToSwapBalanceApiObj.runContractFunction()
-                .then(data => {
-                    data === undefined ? setToBalance(0) : setToBalance(data[data.length - 1] / Math.pow(10, getDecimals().toDecimals));
-                    setChangeFromBalance(false);
-                })
-                .catch(e => console.log(e));
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    const loadAmountOutMin = async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-        let token1 = isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
-        let token2 = !isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
-        try {
-            const pair = await Fetcher.fetchPairData(token2, token1, provider); //creating instances of a pair
-            const route = await new Route([pair], token1); // a fully specified path from input token to output token
-            let amountIn = ethers.utils.parseEther((fromBalance * Math.pow(10, getDecimals().fromDecimals)).toString()); //helper function to convert ETH to Wei
-            amountIn = amountIn.toString()
-            const slippageTolerance = new Percent(slipable * 100, "10000"); // 50 bips, or 0.50% - Slippage tolerance
-
-            const trade = new Trade( //information necessary to create a swap transaction.
-                route,
-                new TokenAmount(token1, amountIn),
-                TradeType.EXACT_INPUT
+            const route = new Route(pairs, tokenFrom);
+            const trade = tradeType === TradeType.EXACT_INPUT
+                ?   new Trade(
+                        route,
+                        new TokenAmount(
+                            tokenFrom,
+                            parseUnits(_amountFrom.toString(), tokenFrom.decimals).toString()
+                        ),
+                        TradeType.EXACT_INPUT,
+                        chainId
+                    )
+                :   new Trade(
+                        route,
+                        new TokenAmount(
+                            tokenTo,
+                            parseUnits(_amountTo.toString(), tokenTo.decimals).toString()
+                        ),
+                        TradeType.EXACT_OUTPUT,
+                        chainId
+                    );
+            const newAmountRaw = tradeType === TradeType.EXACT_INPUT
+                ?   trade.minimumAmountOut(new Percent('0')).raw
+                :   trade.maximumAmountIn(new Percent('0')).raw;
+            const newAmount = formatUnits(
+                BigNumber.from(newAmountRaw.toString()),
+                tradeType === TradeType.EXACT_INPUT ? tokenTo.decimals : tokenFrom.decimals
             );
 
-            const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
-            const amountOutMinHex = ethers.BigNumber.from(amountOutMin.toString()).toHexString();
-            console.log(amountOutMin.toString())
-            setAmountOutMin(amountOutMinHex / Math.pow(10, token2.decimals));
+            if (tradeType === TradeType.EXACT_INPUT) setAmountTo(newAmount);
+            else setAmountFrom(newAmount);
 
-        } catch (e) {
-            console.log(e)
-        }
-    }
+            const slippageTolerance = String(parseInt(slipable * Math.pow(10, 4)));
+            const slippedAmountRaw = tradeType === TradeType.EXACT_INPUT
+                ?   trade.minimumAmountOut(new Percent(slippageTolerance, '10000')).raw
+                :   trade.maximumAmountIn(new Percent(slippageTolerance, '10000')).raw;
+            const _slippedAmount = formatUnits(
+                BigNumber.from(slippedAmountRaw.toString()),
+                tradeType === TradeType.EXACT_INPUT ? tokenTo.decimals : tokenFrom.decimals
+            );
 
-    const loadFromSwapBalance = () => {
-        try {
-            getFromSwapBalanceApiObj.runContractFunction()
-                .then(data => {
-                    data === undefined ? setFromBalance(0) : setFromBalance(data[0]);
-                    setChangeToBalance(false);
-                })
-                .catch(e => console.log(e));
+            setPriceImpact(trade.priceImpact.toFixed());
+            setSlippedAmount(_slippedAmount);
         } catch (e) {
             console.log(e);
         }
     }
 
     const handleSwap = async () => {
-        let token1 = isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
-        let token2 = !isAvaxToAstro ? selectedToken === 0 ? AVAX : USDC : ASTRO;
-        let status = isAvaxToAstro  // 0: AVAX->ASTRO, 1: USDC->ASTRO, 2: ASTRO->AVAX, 3: ASTRO->USDC
-            ? selectedToken === 0
-                ? 0
-                : 1
-            : !isAvaxToAstro && selectedToken === 0
-                ? 2
-                : 3;
-        await swapTokens(token1, token2, fromBalance, slipable * 100, status);
+        try {
+            const _amountFrom = parseFloat(amountFrom);
+            const _amountTo = parseFloat(amountTo);
+
+            let pairs = [];
+
+            const tokenFrom = tokenListFrom[idxTokenFrom];
+            const tokenTo = tokenListTo[idxTokenTo];
+            if (tokenFrom.symbol === WAVAX.symbol || tokenTo.symbol === WAVAX.symbol) {
+                pairs = [tokenPairs[0]];
+            } else if (tokenFrom.symbol === USDC.symbol) {
+                pairs = [tokenPairs[1], tokenPairs[0]];
+            } else if (tokenTo.symbol === USDC.symbol) {
+                pairs = [tokenPairs[0], tokenPairs[1]];
+            }
+
+            const route = new Route(pairs, tokenFrom);
+            const trade = tradeType === TradeType.EXACT_INPUT
+                ?   new Trade(
+                        route,
+                        new TokenAmount(
+                            tokenFrom,
+                            parseUnits(_amountFrom.toString(), tokenFrom.decimals).toString()
+                        ),
+                        TradeType.EXACT_INPUT,
+                        chainId
+                    )
+                :   new Trade(
+                        route,
+                        new TokenAmount(
+                            tokenTo,
+                            parseUnits(_amountTo.toString(), tokenTo.decimals).toString()
+                        ),
+                        TradeType.EXACT_OUTPUT,
+                        chainId
+                    );
+            const slippageTolerance = String(parseInt(slipable * 100));
+
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const accounts = await provider.send("eth_requestAccounts", []);
+            const wallet = accounts[0];
+            const ROUTER_CONTRACT = new ethers.Contract(ROUTER_ADDRESS, ROUTER_ABI, signer);
+
+            const swapParameters = Router.swapCallParameters(
+                trade,
+                {
+                    allowedSlippage: new Percent(slippageTolerance, '10000'),
+                    ttl: 1200,
+                    recipient: wallet,
+                    feeOnTransfer: false
+                }
+            );
+            console.log(swapParameters)
+            if (tokenFrom.symbol !== WAVAX.symbol && tokenTo.symbol !== WAVAX.symbol) {
+                if (tradeType === TradeType.EXACT_INPUT) {
+                    ROUTER_CONTRACT.swapExactTokensForTokens(
+                        swapParameters.args[0],
+                        swapParameters.args[1],
+                        swapParameters.args[2],
+                        swapParameters.args[3],
+                        swapParameters.args[4],
+                        { value: swapParameters.value }
+                    );
+                } else {
+                    ROUTER_CONTRACT.swapTokensForExactTokens(
+                        swapParameters.args[0],
+                        swapParameters.args[1],
+                        swapParameters.args[2],
+                        swapParameters.args[3],
+                        swapParameters.args[4],
+                        { value: swapParameters.value }
+                    );
+                }
+            } else {
+                if (tokenFrom.symbol === WAVAX.symbol) {
+                    if (tradeType === TradeType.EXACT_INPUT) {
+                        ROUTER_CONTRACT.swapExactAVAXForTokens(
+                            swapParameters.args[1],
+                            swapParameters.args[2],
+                            swapParameters.args[3],
+                            swapParameters.args[4],
+                            { value: swapParameters.args[0] }
+                        );
+                    } else {
+                        ROUTER_CONTRACT.swapAVAXForExactTokens(
+                            swapParameters.args[1],
+                            swapParameters.args[2],
+                            swapParameters.args[3],
+                            swapParameters.args[4],
+                            { value: swapParameters.args[0] }
+                        );
+                    }
+                } else if (tokenTo.symbol === WAVAX.symbol) {
+                    if (tradeType === TradeType.EXACT_INPUT) {
+                        ROUTER_CONTRACT.swapExactTokensForAVAX(
+                            swapParameters.args[1],
+                            swapParameters.args[2],
+                            swapParameters.args[3],
+                            swapParameters.args[4],
+                            { value: swapParameters.args[0] }
+                        );
+                    } else {
+                        ROUTER_CONTRACT.swapTokensForExactAVAX(
+                            swapParameters.args[1],
+                            swapParameters.args[2],
+                            swapParameters.args[3],
+                            swapParameters.args[4],
+                            { value: swapParameters.args[0] }
+                        );
+                    }
+                }
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
-    const AvaxFormControl = <FormControl>
-        <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={selectedToken}
-            onChange={handleSelectToken}
-            sx={{
-                '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#686085',
-                    borderRadius: '5px',
-                    borderWidth: 1,
-                    overflow: 'hidden'
-                },
-                '& .MuiSelect-select.MuiInputBase-input.MuiOutlinedInput-input': {
-                    overflow: 'hidden',
-                    padding: '10px',
-                    background: 'rgba(21, 27, 52, 0.3)',
-                },
+    const handleChangeAmount = (event, type) => {
+        if (!regexFloat.test(event.target.value)) return;
 
-                background: 'linear-gradient(6.49deg, #271C2B -1.79%, #222546 88.58%)',
-                height: '40px'
-            }}
-        >
-            <MenuItem value={0} sx={{ borderRadius: '5px' }}>
-                <Grid sx={{ display: 'flex' }}>
-                    <img src={avaxIcon} style={{ width: '30px', height: '30px' }} />
-                    <Typography sx={{
-                        fontFamily: 'Poppins',
-                        fontSize: '18px',
-                        fontWeight: '400',
-                        cursor: 'pointer',
-                        marginLeft: '8px'
-                    }}>AVAX</Typography>
-                </Grid>
-            </MenuItem>
-            <MenuItem value={1} sx={{ borderRadius: '5px' }}>
-                <Grid sx={{ display: 'flex' }}>
-                    <img src={usdcIcon} style={{ width: '30px', height: '30px' }} />
-                    <Typography sx={{
-                        fontFamily: 'Poppins',
-                        fontSize: '18px',
-                        fontWeight: '400',
-                        cursor: 'pointer',
-                        marginLeft: '8px'
-                    }}>USDC</Typography>
-                </Grid>
-            </MenuItem>
-        </Select>
-    </FormControl>
+        if (type === 0) {
+            setAmountFrom(event.target.value);
+            setTradeType(TradeType.EXACT_INPUT);
+        } else {
+            setAmountTo(event.target.value);
+            setTradeType(TradeType.EXACT_OUTPUT);
+        }
+    }
 
-    const AstroFormControl = <FormControl>
-        <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={selectedAstroToken}
-            onChange={handleSelectAstroToken}
-            sx={{
-                '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#686085',
-                    borderRadius: '5px',
-                    borderWidth: 1,
-                    overflow: 'hidden'
-                },
-                '& .MuiSelect-select.MuiInputBase-input.MuiOutlinedInput-input': {
-                    overflow: 'hidden',
-                    padding: '4px',
-                    background: 'rgba(21, 27, 52, 0.3)',
-                },
+    // type --- 0: from, 1: to
+    const SelectTokenControl = type => {
+        const value = type === 0 ? idxTokenFrom : idxTokenTo;
+        const onChange = e => {
+            if (type === 0) setIdxTokenFrom(e.target.value);
+            if (type === 1) setIdxTokenTo(e.target.value);
+        }
+        const tokenList = type === 0 ? tokenListFrom : tokenListTo;
+        return (
+            <FormControl>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={value}
+                    onChange={onChange}
+                    sx={{
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: '#686085',
+                            borderRadius: '5px',
+                            borderWidth: 1,
+                            overflow: 'hidden'
+                        },
+                        '& .MuiSelect-select.MuiInputBase-input.MuiOutlinedInput-input': {
+                            overflow: 'hidden',
+                            padding: '10px',
+                            background: 'rgba(21, 27, 52, 0.3)',
+                        },
 
-                background: 'linear-gradient(6.49deg, #271C2B -1.79%, #222546 88.58%)',
-                height: '40px'
-            }}
-        >
-            <MenuItem value={0} sx={{ borderRadius: '5px' }}>
-                <Grid sx={{ display: 'flex' }}>
-                    <img src={astroIcon} style={{ width: '30px', height: '30px' }} />
-                    <Typography sx={{
-                        fontFamily: 'Poppins',
-                        fontSize: '18px',
-                        fontWeight: '400',
-                        cursor: 'pointer',
-                        marginLeft: '8px'
-                    }}>ASTRO</Typography>
-                </Grid>
-            </MenuItem>
-        </Select>
-    </FormControl>
+                        background: 'linear-gradient(6.49deg, #271C2B -1.79%, #222546 88.58%)',
+                        height: '40px'
+                    }}
+                >
+                    {tokenList.map((token, idx) => (
+                        <MenuItem key={idx} value={idx} sx={{ borderRadius: '5px' }}>
+                            <Grid sx={{ display: 'flex' }}>
+                                <img src={TOKEN_ICONS[token.symbol]} style={{ width: '30px', height: '30px' }} />
+                                <Typography sx={{
+                                    fontFamily: 'Poppins',
+                                    fontSize: '18px',
+                                    fontWeight: '400',
+                                    cursor: 'pointer',
+                                    marginLeft: '8px'
+                                }}>{token.symbol}</Typography>
+                            </Grid>
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        );
+    }
 
     const SplippageButton = (percent) => {
         return <ButtonBase
@@ -417,7 +373,10 @@ export default function SwapForAstro() {
                 fontSize: '18px',
                 background: percent === slipable ? '#523bff' : 'transparent'
             }}
-            onClick={() => handleSlipPercent(percent)}
+            onClick={() => {
+                if (percent === 'AUTO') setSlipable(1.0);
+                else setSlipable(percent);
+            }}
         >{percent === 'AUTO' ? 'AUTO' : `${percent}%`}</ButtonBase>
     }
 
@@ -432,18 +391,36 @@ export default function SwapForAstro() {
                 background: 'rgb(76, 52, 134)',
             }
         }}
-            onClick={() => handleSelectCustomFromBalance(percent)}
+            onClick={() => {
+                setAmountFrom(
+                    tokenBalanceList[tokenListFrom[idxTokenFrom].symbol] / 100 * percent
+                );
+            }}
         >{percent === 100 ? 'MAX' : `${percent}%`}</ButtonBase>
     }
 
-    const buttonStatusText = () => {
-        let balance = isAvaxToAstro
-            ? selectedToken === 0
-                ? parseFloat(accountAvaxBalance)
-                : parseFloat(accountUsdcBalance)
-            : parseFloat(accountTokenBalance);
-        return fromBalance === 0 ? 0 : parseFloat(fromBalance) >= balance ? 1 : 2;
-    }
+    React.useEffect(() => {
+        (async () => {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+            const WAVAX_ASTRO = await Fetcher.fetchPairData(WAVAX, ASTRO, provider);
+            const USDC_WAVAX = await Fetcher.fetchPairData(USDC, WAVAX, provider);
+
+            setTokenPairs([WAVAX_ASTRO, USDC_WAVAX]);
+        })();
+    }, []);
+
+    React.useEffect(() => {
+        const _amountFrom = parseFloat(amountFrom);
+        const _amountTo = parseFloat(amountTo);
+        console.log(_amountFrom, amountFrom, "amountFrom")
+        console.log(_amountTo, amountTo, "amountTo")
+        if (tokenPairs.length > 0 && !isNaN(_amountFrom) && !isNaN(_amountTo)
+            && ((tradeType === TradeType.EXACT_INPUT && _amountFrom !== 0) || (tradeType === TradeType.EXACT_OUTPUT && _amountTo !== 0))) {
+            console.log("loadSwappableAmount")
+            loadSwappableAmount();
+        }
+    }, [tokenPairs, amountFrom, amountTo, tradeType]);
 
     return (
         <MainCard title="">
@@ -464,7 +441,7 @@ export default function SwapForAstro() {
                                         fontWeight: '700',
                                         letterSpacing: '1px'
                                     }}>SWAP FOR ASTRO</Typography>
-                                    {isAvaxToAstro ?
+                                    {tokenListFrom[idxTokenFrom].symbol === ASTRO.symbol ?
                                         <Typography sx={{
                                             fontSize: '14px',
                                             fontWeight: '400'
@@ -475,14 +452,12 @@ export default function SwapForAstro() {
                                         }}>Sell <b>ASTRO</b> below</Typography>}
                                 </Grid>
                                 <ButtonBase variant="contained" sx={{ cursor: 'pointer' }}
-                                    onClick={handleOpenSlippageSetting}>
+                                    onClick={() => {setIsOpenSlippageDialog(true)}}>
                                     <IconSettings size='30px' color='rgb(255, 184, 77)' />
                                 </ButtonBase>
                                 <Modal
-                                    open={isOpenSlippage}
-                                    onClose={handleCloseSlippageSetting}
-                                    aria-labelledby="modal-modal-title"
-                                    aria-describedby="modal-modal-description"
+                                    open={isOpenSlippageDialog}
+                                    onClose={() => {setIsOpenSlippageDialog(false)}}
                                 >
                                     <Grid sx={{
                                         position: 'absolute',
@@ -552,8 +527,11 @@ export default function SwapForAstro() {
                                                             }}>%</Typography>
                                                         ),
                                                     }}
-                                                    value={customSlipable}
-                                                    onChange={handleCustomSlipPercent}
+                                                    value={slipable}
+                                                    onChange={event => {
+                                                        if (!regexFloat.test(event.target.value)) return;
+                                                        setSlipable(event.target.value);
+                                                    }}
                                                 />
 
                                                 <Grid sx={{ display: 'flex', alignItems: 'center' }}>
@@ -590,11 +568,7 @@ export default function SwapForAstro() {
                                         fontWeight: '400',
                                         cursor: 'pointer'
                                     }}>Balance:{accountAvaxBalance && accountUsdcBalance && accountTokenBalance
-                                        ? isAvaxToAstro
-                                            ? selectedToken === 0
-                                                ? numberWithCommas(parseFloat(accountAvaxBalance).toFixed(3))
-                                                : numberWithCommas(accountUsdcBalance.toFixed(3))
-                                            : numberWithCommas(accountTokenBalance.toFixed(3))
+                                        ? numberWithCommas(parseFloat(tokenBalanceList[tokenListFrom[idxTokenFrom].symbol]).toFixed(3))
                                         : 0}
                                     </Typography>
                                 </Grid>
@@ -616,17 +590,19 @@ export default function SwapForAstro() {
                                                 borderColor: '#10123e !important',
                                             }
                                         }}
-                                        value={fromBalance}
-                                        onChange={(e) => handleCustomBalance(e, 0)} />
+                                        value={amountFrom}
+                                        onChange={event => handleChangeAmount(event, 0)} />
                                     <Grid sx={{ display: 'flex', alignItems: 'center' }}>
-                                        {isAvaxToAstro
+                                        {tokenListFrom[idxTokenFrom].symbol !== ASTRO.symbol
                                             ? AmountButton(100)
                                             : <>
                                                 {AmountButton(20)}
                                                 {AmountButton(50)}
                                             </>
                                         }
-                                        {isAvaxToAstro ? AvaxFormControl : AstroFormControl}
+                                        {
+                                            SelectTokenControl(0)
+                                        }
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -641,7 +617,7 @@ export default function SwapForAstro() {
                                 borderRadius: '20px',
                                 background: 'rgb(255, 184, 77)',
                                 cursor: 'pointer'
-                            }} onClick={handleAvaxToAstro}>
+                            }} onClick={handleClickReplaceList}>
                                 <IconArrowsUpDown size='24px' color='rgba(0, 0, 0, 0.54)' />
                             </ButtonBase>
                             <Grid sx={{
@@ -666,13 +642,8 @@ export default function SwapForAstro() {
                                         fontSize: '18px',
                                         fontWeight: '400',
                                         cursor: 'pointer'
-
                                     }}>Balance:{accountAvaxBalance && accountUsdcBalance && accountTokenBalance
-                                        ? !isAvaxToAstro
-                                            ? selectedToken === 0
-                                                ? numberWithCommas(parseFloat(accountAvaxBalance).toFixed(3))
-                                                : numberWithCommas(accountUsdcBalance.toFixed(3))
-                                            : numberWithCommas(accountTokenBalance.toFixed(3))
+                                        ? numberWithCommas(parseFloat(tokenBalanceList[tokenListTo[idxTokenTo].symbol]).toFixed(3))
                                         : 0}
                                     </Typography>
                                 </Grid>
@@ -694,10 +665,12 @@ export default function SwapForAstro() {
                                                 borderColor: '#10123e !important',
                                             }
                                         }}
-                                        value={toBalance}
-                                        onChange={(e) => handleCustomBalance(e, 1)} />
+                                        value={amountTo}
+                                        onChange={event => handleChangeAmount(event, 1)} />
                                     <Grid sx={{ display: 'flex', alignItems: 'center' }}>
-                                        {!isAvaxToAstro ? AvaxFormControl : AstroFormControl}
+                                        {
+                                            SelectTokenControl(1)
+                                        }
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -710,7 +683,14 @@ export default function SwapForAstro() {
                                     <Typography sx={{
                                         fontSize: '16px',
                                         fontFamily: 'Poppins'
-                                    }}>0 AVAX per ASTRO</Typography>
+                                    }}>
+                                        {
+                                            (!isNaN(parseFloat(amountFrom)) && !isNaN(parseFloat(amountTo)) && parseFloat(amountTo) !== 0
+                                                ? (parseFloat(amountFrom) / parseFloat(amountTo)).toFixed(6)
+                                                : 0).toString() +
+                                            ` ${tokenListFrom[idxTokenFrom].symbol} per ${tokenListTo[idxTokenTo].symbol}`
+                                        }
+                                    </Typography>
                                 </Grid>
                                 <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <Typography sx={{
@@ -726,13 +706,13 @@ export default function SwapForAstro() {
                                     <Typography sx={{
                                         fontSize: '14px',
                                         marginBottom: '5px'
-                                    }}>{isAvaxToAstro ? 'Buy Tax (15%)' : 'Sell Tax (30%)'}</Typography>
+                                    }}>{tokenListFrom[idxTokenFrom].symbol !== ASTRO.symbol ? 'Buy Tax (15%)' : 'Sell Tax (30%)'}</Typography>
                                     <Typography sx={{
                                         fontSize: '16px',
                                         fontFamily: 'Poppins'
-                                    }}>{isAvaxToAstro
-                                        ? toBalance * 0.15
-                                        : fromBalance * 0.3}</Typography>
+                                    }}>{tokenListFrom[idxTokenFrom].symbol !== ASTRO.symbol
+                                        ? amountTo * 0.15
+                                        : amountFrom * 0.3}</Typography>
                                 </Grid>
                             </Grid>
                             <Grid sx={{ marginTop: '1rem' }}>
@@ -749,9 +729,17 @@ export default function SwapForAstro() {
                                     fontSize: '16px',
                                     borderRadius: '6px',
                                 }}
-                                    disabled={buttonStatusText() === 2 ? false : true}
+                                    // disabled={amountFrom === 0 || amountFrom >= tokenBalanceList[tokenListFrom[idxTokenFrom].symbol]}
                                     onClick={handleSwap}
-                                >{buttonStatusText() === 0 ? "Enter an amount" : buttonStatusText() === 1 ? "Insufficient AVAX balance" : "Swap"}</Button>
+                                >
+                                    {
+                                        amountFrom === 0
+                                            ? "Enter an amount"
+                                            : amountFrom >= tokenBalanceList[tokenListFrom[idxTokenFrom].symbol]
+                                                ? `Insufficient ${tokenListFrom[idxTokenFrom].symbol} balance`
+                                                : "Swap"
+                                    }
+                                </Button>
                             </Grid>
                             <Grid sx={{
                                 display: 'flex',
@@ -783,11 +771,15 @@ export default function SwapForAstro() {
                                 <Typography sx={{
                                     fontSize: '14px',
                                     marginBottom: '5px'
-                                }}>{isAvaxToAstro ? 'Minimum received' : 'Maximum sold'}</Typography>
+                                }}>{tradeType === TradeType.EXACT_INPUT ? 'Minimum received' : 'Maximum sold'}</Typography>
                                 <Typography sx={{
                                     fontSize: '14px',
                                     fontFamily: 'Poppins'
-                                }}>{isAvaxToAstro ? `${amountOutMin}ASTRO` : `${amountInMax}AVAX`}</Typography>
+                                }}>{slippedAmount}
+                                    {tradeType === TradeType.EXACT_INPUT
+                                        ? ` ${tokenListTo[idxTokenTo].symbol}`
+                                        : ` ${tokenListFrom[idxTokenFrom].symbol}`}
+                                </Typography>
                             </Grid>
                             <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{
@@ -798,7 +790,7 @@ export default function SwapForAstro() {
                                     fontSize: '14px',
                                     color: '#4ed047',
                                     fontFamily: 'Poppins'
-                                }}>{'< 0.01%'}</Typography>
+                                }}>{`< ${priceImpact}%`}</Typography>
                             </Grid>
                             <Grid sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Typography sx={{
